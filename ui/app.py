@@ -311,6 +311,46 @@ header[data-testid="stHeader"] { display: none; }
     border-color: #7F77DD !important;
     box-shadow: 0 0 0 3px rgba(127,119,221,0.12) !important;
 }
+
+@media (max-width: 768px) {
+    .ra-nav { padding: 0 16px; }
+
+    .ra-wrap { padding: 20px 14px 40px; }
+
+    .ra-hero { padding: 32px 12px 24px; }
+    .ra-h1 { font-size: 28px; letter-spacing: -0.03em; }
+    .ra-sub { font-size: 15px; margin-bottom: 24px; }
+
+    .ra-how-grid { grid-template-columns: 1fr; gap: 10px; margin-top: 20px !important; }
+
+    .ra-score-grid { grid-template-columns: repeat(3, 1fr); }
+    .ra-score-num  { font-size: 22px; }
+
+    .ra-cols        { grid-template-columns: 1fr; }
+    .ra-detail-grid { grid-template-columns: 1fr; }
+
+    .ra-rec-card { padding: 14px 16px; }
+
+    .ra-progress-card { padding: 16px; }
+
+    /* make Streamlit columns stack on mobile */
+    [data-testid="stHorizontalBlock"] {
+        flex-wrap: wrap !important;
+        gap: 8px !important;
+    }
+    [data-testid="stHorizontalBlock"] > [data-testid="stColumn"] {
+        min-width: 0 !important;
+        flex: 1 1 auto !important;
+    }
+
+    /* hide the spacer columns, let input+button fill the row */
+    [data-testid="stHorizontalBlock"] > [data-testid="stColumn"]:first-child,
+    [data-testid="stHorizontalBlock"] > [data-testid="stColumn"]:last-child {
+        display: none !important;
+    }
+
+    .stButton > button { font-size: 13px !important; padding: 10px 14px !important; }
+}
 </style>
 """, unsafe_allow_html=True)
 
