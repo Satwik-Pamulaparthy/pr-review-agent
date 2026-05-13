@@ -1,5 +1,3 @@
-cat > requirements.txt << EOF
 streamlit==1.45.1
 websockets==15.0.1
 python-dotenv==1.1.0
-EOF
