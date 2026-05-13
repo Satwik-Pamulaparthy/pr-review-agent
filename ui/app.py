@@ -312,6 +312,7 @@ header[data-testid="stHeader"] { display: none; }
     box-shadow: 0 0 0 3px rgba(127,119,221,0.12) !important;
 }
 
+.ra-author-row   { }
 .ra-diff-mobile  { display: none; }
 .ra-diff-desktop { display: block; }
 
@@ -340,6 +341,7 @@ header[data-testid="stHeader"] { display: none; }
 }
 
 @media (max-width: 768px) {
+    .ra-author-row   { display: none !important; }
     .ra-diff-mobile  { display: block; }
     .ra-diff-desktop { display: none; }
 }
@@ -517,7 +519,7 @@ def author_card_html(final_data):
 
       <div style="height:0.5px;background:#f0f0ec;margin-bottom:14px;"></div>
 
-      <div style="display:flex;align-items:center;gap:12px;">
+      <div class="ra-author-row" style="display:flex;align-items:center;gap:12px;">
         <div style="position:relative;flex-shrink:0;">
           <img src="{avatar_url}"
                width="36" height="36"
