@@ -312,6 +312,38 @@ header[data-testid="stHeader"] { display: none; }
     box-shadow: 0 0 0 3px rgba(127,119,221,0.12) !important;
 }
 
+.ra-diff-mobile  { display: none; }
+.ra-diff-desktop { display: block; }
+
+.ra-diff-card {
+    background: #fff; border: 0.5px solid #e8e8e4;
+    border-radius: 14px; padding: 18px 20px; margin-bottom: 24px;
+}
+.ra-diff-card-title {
+    font-size: 13px; font-weight: 700; color: #1a1a1a; margin-bottom: 14px;
+    padding-bottom: 10px; border-bottom: 0.5px solid #f0f0ec;
+}
+.ra-diff-link {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 12px; font-weight: 600; color: #534AB7;
+    text-decoration: none; padding: 8px 16px;
+    border: 0.5px solid #AFA9EC; border-radius: 99px;
+    background: #EEEDFE;
+}
+.ra-diff-link:hover { background: #e0defe; }
+.ra-diff-mobile-btn {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    width: 100%; background: #1a1a1a; color: #fff;
+    border: none; border-radius: 10px; padding: 13px 20px;
+    font-size: 14px; font-weight: 600; cursor: pointer;
+    margin-bottom: 24px; text-decoration: none;
+}
+
+@media (max-width: 768px) {
+    .ra-diff-mobile  { display: block; }
+    .ra-diff-desktop { display: none; }
+}
+
 @media (max-width: 768px) {
     .ra-nav { padding: 0 16px; }
 
@@ -330,10 +362,11 @@ header[data-testid="stHeader"] { display: none; }
     .ra-col-card    { padding: 14px; }
     .ra-col-head    { margin-bottom: 10px; }
     .ra-col-title   { font-size: 12px; }
-    .ra-finding     { padding: 8px 10px; margin-bottom: 6px; }
-    .ra-f-title     { font-size: 11px; }
-    .ra-f-desc      { font-size: 10px; }
-    .ra-sugg-t      { font-size: 11px; }
+    .ra-finding     { padding: 8px 10px; margin-bottom: 6px; overflow: hidden; }
+    .ra-f-title     { font-size: 11px; word-break: break-word; overflow-wrap: break-word; }
+    .ra-f-file      { word-break: break-all; overflow-wrap: break-word; white-space: normal; }
+    .ra-f-desc      { font-size: 10px; word-break: break-word; overflow-wrap: break-word; }
+    .ra-sugg-t      { font-size: 11px; word-break: break-word; overflow-wrap: break-word; }
     .ra-detail-grid { grid-template-columns: 1fr; }
 
     .ra-rec-card { padding: 14px 16px; }
@@ -809,6 +842,31 @@ def main():
         </div>
         {sugg_html}
       </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    import re as _re
+    _m = _re.search(r'/pull/(\d+)', pr_url)
+    _pr_num = _m.group(1) if _m else ''
+    _repo   = final_data.get('repo', '')
+    _diff_url = f"https://github.com/{_repo}/pull/{_pr_num}/files" if _pr_num else f"https://github.com/{_repo}"
+
+    st.markdown(f"""
+    <div class="ra-diff-desktop">
+      <div class="ra-diff-card">
+        <div class="ra-diff-card-title">Code Diff</div>
+        <p style="font-size:12px;color:#888;margin-bottom:14px;line-height:1.6;">
+          View the full file-by-file diff for this pull request on GitHub.
+        </p>
+        <a href="{_diff_url}" target="_blank" class="ra-diff-link">
+          View diff on GitHub ↗
+        </a>
+      </div>
+    </div>
+    <div class="ra-diff-mobile">
+      <a href="{_diff_url}" target="_blank" class="ra-diff-mobile-btn">
+        GitHub Diff View ↗
+      </a>
     </div>
     """, unsafe_allow_html=True)
 
