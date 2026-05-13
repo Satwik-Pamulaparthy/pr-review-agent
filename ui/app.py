@@ -404,7 +404,7 @@ def author_card_html(final_data):
     pr_num      = final_data.get('pr_number', '')
     additions   = final_data.get('additions', 0)
     deletions   = final_data.get('deletions', 0)
-    avatar_url  = f"https://github.com/{author}.png?size=88"
+    avatar_url  = f"https://avatars.githubusercontent.com/{author}?s=88"
     gh_pr_url   = f"https://github.com/{repo}/pull/{pr_num}" if pr_num else "#"
     gh_user_url = f"https://github.com/{author}"
     initials    = "".join([w[0].upper() for w in author.replace("-"," ").split()[:2]]) if author else "?"
