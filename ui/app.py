@@ -499,9 +499,9 @@ def main():
     <div class="ra-hero">
       <div class="ra-eyebrow">⚡ Powered by GPT-4o + LangGraph</div>
       <h1 class="ra-h1">AI code review<br>in 30 seconds</h1>
-      <p class="ra-sub">Paste any GitHub pull request. Five specialist agents check
+      <p class="ra-sub" style="text-align:center;margin-left:auto;margin-right:auto;">
+      Paste any GitHub pull request. Five specialist agents check
       security, logic, test coverage, and docs — then deliver a structured report.</p>
-    </div>
     """, unsafe_allow_html=True)
 
     col_input, col_btn = st.columns([5, 1])
