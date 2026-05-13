@@ -517,45 +517,47 @@ def author_card_html(final_data):
         </span>
       </div>
 
-      <div style="height:0.5px;background:#f0f0ec;margin-bottom:16px;"></div>
+      <div style="height:0.5px;background:#f0f0ec;margin-bottom:14px;"></div>
 
-      <div class="ra-author-row" style="display:flex;align-items:center;gap:14px;">
-        <a href="{gh_user_url}" target="_blank"
-           style="flex-shrink:0;text-decoration:none;display:block;">
+      <div class="ra-author-row" style="display:flex;align-items:center;gap:12px;">
+        <div style="position:relative;flex-shrink:0;">
           <img src="{avatar_url}"
-               width="48" height="48"
+               width="36" height="36"
                style="border-radius:50%;border:2px solid #fff;
                       outline:2px solid #e8e8e4;object-fit:cover;display:block;"
                onerror="this.style.display='none';
                         this.nextElementSibling.style.display='flex';" />
-          <div style="display:none;width:48px;height:48px;border-radius:50%;
-                      background:#EEEDFE;color:#534AB7;font-size:14px;font-weight:700;
+          <div style="display:none;width:36px;height:36px;border-radius:50%;
+                      background:#EEEDFE;color:#534AB7;font-size:12px;font-weight:700;
                       align-items:center;justify-content:center;">
             {initials}
           </div>
-        </a>
-
-        <div style="flex:1;min-width:0;">
-          <a href="{gh_user_url}" target="_blank"
-             style="font-size:14px;font-weight:700;color:#1a1a1a;
-                    text-decoration:none;display:block;margin-bottom:3px;
-                    letter-spacing:-0.01em;">
-            {author}
-          </a>
-          <a href="{gh_user_url}" target="_blank"
-             style="font-size:11px;color:#8b8b8b;text-decoration:none;
-                    font-family:monospace;display:inline-flex;align-items:center;gap:4px;">
-            github.com/{author} ↗
-          </a>
         </div>
 
-        <a href="{gh_pr_url}" target="_blank"
-           style="font-size:11px;color:#fff;text-decoration:none;
-                  display:inline-flex;align-items:center;gap:4px;flex-shrink:0;
-                  padding:7px 14px;border:none;border-radius:99px;
-                  background:#1a1a1a;font-weight:600;letter-spacing:-0.01em;">
-          View PR ↗
-        </a>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:13px;font-weight:600;color:#1a1a1a;
+                      margin-bottom:2px;">{author}</div>
+          <div style="font-size:11px;color:#aaa;font-family:monospace;">
+            github.com/{author}
+          </div>
+        </div>
+
+        <div style="display:flex;gap:8px;flex-shrink:0;">
+          <a href="{gh_user_url}" target="_blank"
+             style="font-size:11px;color:#534AB7;text-decoration:none;
+                    display:inline-flex;align-items:center;gap:4px;
+                    padding:5px 12px;border:0.5px solid #AFA9EC;
+                    border-radius:99px;background:#EEEDFE;font-weight:600;">
+            View profile ↗
+          </a>
+          <a href="{gh_pr_url}" target="_blank"
+             style="font-size:11px;color:#fff;text-decoration:none;
+                    display:inline-flex;align-items:center;gap:4px;
+                    padding:5px 12px;border:none;border-radius:99px;
+                    background:#1a1a1a;font-weight:600;">
+            View PR ↗
+          </a>
+        </div>
       </div>
     </div>"""
 
