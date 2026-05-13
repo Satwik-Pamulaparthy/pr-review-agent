@@ -326,7 +326,14 @@ header[data-testid="stHeader"] { display: none; }
     .ra-score-grid { grid-template-columns: repeat(3, 1fr); }
     .ra-score-num  { font-size: 22px; }
 
-    .ra-cols        { grid-template-columns: 1fr; }
+    .ra-cols        { grid-template-columns: 1fr; gap: 10px; }
+    .ra-col-card    { padding: 14px; }
+    .ra-col-head    { margin-bottom: 10px; }
+    .ra-col-title   { font-size: 12px; }
+    .ra-finding     { padding: 8px 10px; margin-bottom: 6px; }
+    .ra-f-title     { font-size: 11px; }
+    .ra-f-desc      { font-size: 10px; }
+    .ra-sugg-t      { font-size: 11px; }
     .ra-detail-grid { grid-template-columns: 1fr; }
 
     .ra-rec-card { padding: 14px 16px; }
@@ -786,19 +793,19 @@ def main():
     <div class="ra-cols">
       <div class="ra-col-card">
         <div class="ra-col-head">
-          <div class="ra-col-title">🔒 Security {sec_badge}</div>
+          <div class="ra-col-title">Security {sec_badge}</div>
         </div>
         {finding_html(sec_findings, "security")}
       </div>
       <div class="ra-col-card">
         <div class="ra-col-head">
-          <div class="ra-col-title">🧠 Logic issues {log_badge}</div>
+          <div class="ra-col-title">Logic issues {log_badge}</div>
         </div>
         {finding_html(log_findings, "logic")}
       </div>
       <div class="ra-col-card">
         <div class="ra-col-head">
-          <div class="ra-col-title">💡 What to fix first</div>
+          <div class="ra-col-title">What to fix first</div>
         </div>
         {sugg_html}
       </div>
