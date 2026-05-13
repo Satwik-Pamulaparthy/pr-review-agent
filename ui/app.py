@@ -582,8 +582,8 @@ def main():
       <div class="ra-eyebrow">⚡ Powered by GPT-4o + LangGraph</div>
       <h1 class="ra-h1">AI code review<br>in 30 seconds</h1>
       <p class="ra-sub" style="text-align:center;margin-left:auto;margin-right:auto;">
-      Paste any GitHub pull request. Five specialist agents check
-      security, logic, test coverage, and docs — then deliver a structured report.</p>
+      Great code doesn't review itself. Paste a GitHub PR and get five specialist agents
+      to do what most teams don't have time for — a thorough, structured review in under 30 seconds.</p>
     """, unsafe_allow_html=True)
 
     _, col_input, col_btn, _ = st.columns([2, 3.5, 0.8, 2])
