@@ -1,0 +1,24 @@
+# Environment
+.env
+*.env
+
+# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+
+# VS Code
+.vscode/
+
+# OS
+.DS_Store
+
+# Data
+*.csv
+*.json
+data/
