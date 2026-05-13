@@ -598,7 +598,7 @@ def main():
 
     st.markdown(
         "<p style='font-size:12px;color:#bbb;margin-top:6px;text-align:center;'>"
-        "Try: https://github.com/fastapi/fastapi/pull/15508 · Any public GitHub PR works</p>",
+        "Any public GitHub PR works</p>",
         unsafe_allow_html=True
     )
 
