@@ -49,14 +49,10 @@ class ReviewResponse(BaseModel):
     errors: list
 
 
-# ── REST endpoint (synchronous — returns full result) ─────────────────────────
+# ── REST endpoint ─────────────────────────────────────────────────────────────
 
 @app.post("/review", response_model=ReviewResponse)
 async def review_pr(request: ReviewRequest):
-    """
-    Submit a PR URL and receive the full review report.
-    Runs all agents synchronously and returns when complete.
-    """
     from graph.workflow import review_graph
     from graph.state import ReviewState
 
@@ -101,43 +97,30 @@ async def review_pr(request: ReviewRequest):
     )
 
 
-# ── WebSocket endpoint (streams agent progress in real time) ──────────────────
+# ── WebSocket endpoint ────────────────────────────────────────────────────────
 
 @app.websocket("/review/stream")
 async def review_pr_stream(websocket: WebSocket):
-    """
-    WebSocket endpoint that streams agent progress as JSON events.
-
-    Client sends:  {"pr_url": "https://github.com/..."}
-    Server sends:  a stream of JSON event objects (see EventType below)
-    """
     await websocket.accept()
 
     try:
-        data = await websocket.receive_json()
+        data   = await websocket.receive_json()
         pr_url = data.get("pr_url", "")
 
         if "github.com" not in pr_url or "/pull/" not in pr_url:
-            await websocket.send_json({
-                "type": "error",
-                "message": "Invalid PR URL"
-            })
+            await websocket.send_json({"type": "error", "message": "Invalid PR URL"})
             await websocket.close()
             return
 
-        # Send start event
         await websocket.send_json({
             "type": "start",
             "message": f"Starting review for: {pr_url}"
         })
 
-        # Run the pipeline in a thread (LangGraph is sync)
-        # We stream progress by running each agent step and sending events
         loop = asyncio.get_event_loop()
 
         async def run_with_progress():
             from graph.state import ReviewState
-            from tools.github_client import fetch_pr
             from agents.security import run_security_agent
             from agents.logic import run_logic_agent
             from agents.test_coverage import run_test_coverage_agent
@@ -165,76 +148,52 @@ async def review_pr_stream(websocket: WebSocket):
                 "agent": "fetch_pr",
                 "message": f"Fetched PR #{state.parsed_pr.pr_number}: {state.parsed_pr.title}",
                 "data": {
-                    "title": state.parsed_pr.title,
-                    "author": state.parsed_pr.author,
-                    "files": state.parsed_pr.total_files_changed,
+                    "title":     state.parsed_pr.title,
+                    "author":    state.parsed_pr.author,
+                    "files":     state.parsed_pr.total_files_changed,
                     "additions": state.parsed_pr.total_additions,
                     "deletions": state.parsed_pr.total_deletions,
                 }
             })
 
-            # Step 2 — Security agent
-            await websocket.send_json({
-                "type": "agent_start",
-                "agent": "security",
-                "message": "Running security audit..."
-            })
+            # Step 2 — Security
+            await websocket.send_json({"type": "agent_start", "agent": "security", "message": "Running security audit..."})
             state = await loop.run_in_executor(None, run_security_agent, state)
             await websocket.send_json({
-                "type": "agent_done",
-                "agent": "security",
+                "type": "agent_done", "agent": "security",
                 "message": f"Found {len(state.security_findings)} security issue(s)",
                 "data": {"count": len(state.security_findings)}
             })
 
-            # Step 3 — Logic agent
-            await websocket.send_json({
-                "type": "agent_start",
-                "agent": "logic",
-                "message": "Reviewing logic and correctness..."
-            })
+            # Step 3 — Logic
+            await websocket.send_json({"type": "agent_start", "agent": "logic", "message": "Reviewing logic and correctness..."})
             state = await loop.run_in_executor(None, run_logic_agent, state)
             await websocket.send_json({
-                "type": "agent_done",
-                "agent": "logic",
+                "type": "agent_done", "agent": "logic",
                 "message": f"Found {len(state.logic_findings)} logic issue(s)",
                 "data": {"count": len(state.logic_findings)}
             })
 
-            # Step 4 — Test coverage agent
-            await websocket.send_json({
-                "type": "agent_start",
-                "agent": "test_coverage",
-                "message": "Analyzing test coverage..."
-            })
+            # Step 4 — Test coverage
+            await websocket.send_json({"type": "agent_start", "agent": "test_coverage", "message": "Analyzing test coverage..."})
             state = await loop.run_in_executor(None, run_test_coverage_agent, state)
             await websocket.send_json({
-                "type": "agent_done",
-                "agent": "test_coverage",
+                "type": "agent_done", "agent": "test_coverage",
                 "message": f"Coverage score: {state.test_coverage.coverage_score}/100",
                 "data": {"score": state.test_coverage.coverage_score if state.test_coverage else 0}
             })
 
-            # Step 5 — Documentation agent
-            await websocket.send_json({
-                "type": "agent_start",
-                "agent": "documentation",
-                "message": "Checking documentation quality..."
-            })
+            # Step 5 — Documentation
+            await websocket.send_json({"type": "agent_start", "agent": "documentation", "message": "Checking documentation quality..."})
             state = await loop.run_in_executor(None, run_documentation_agent, state)
             await websocket.send_json({
-                "type": "agent_done",
-                "agent": "documentation",
+                "type": "agent_done", "agent": "documentation",
                 "message": f"Documentation score: {state.documentation.score}/100",
                 "data": {"score": state.documentation.score if state.documentation else 0}
             })
 
             # Step 6 — Synthesis
-            await websocket.send_json({
-                "type": "agent_start",
-                "agent": "synthesis",
-                "message": "Synthesizing final review report..."
-            })
+            await websocket.send_json({"type": "agent_start", "agent": "synthesis", "message": "Synthesizing final review report..."})
             state = await loop.run_in_executor(None, run_synthesis_agent, state)
 
             review = state.final_review
@@ -244,20 +203,23 @@ async def review_pr_stream(websocket: WebSocket):
                     "agent": "synthesis",
                     "message": "Review complete",
                     "data": {
-                        "pr_title": state.parsed_pr.title,
-                        "pr_author": state.parsed_pr.author,
-                        "repo": state.parsed_pr.repo_name,
-                        "overall_score": review.overall_score,
-                        "recommendation": review.recommendation,
-                        "summary": review.summary,
+                        "pr_title":          state.parsed_pr.title,
+                        "pr_author":         state.parsed_pr.author,
+                        "repo":              state.parsed_pr.repo_name,
+                        "overall_score":     review.overall_score,
+                        "recommendation":    review.recommendation,
+                        "summary":           review.summary,
                         "security_findings": [f.model_dump() for f in state.security_findings],
-                        "logic_findings": [f.model_dump() for f in state.logic_findings],
-                        "test_coverage_score": state.test_coverage.coverage_score if state.test_coverage else 0,
-                        "documentation_score": state.documentation.score if state.documentation else 0,
-                        "security_highlights": review.security_highlights,
-                        "logic_highlights": review.logic_highlights,
-                        "top_suggestions": review.top_suggestions,
+                        "logic_findings":    [f.model_dump() for f in state.logic_findings],
+                        "test_coverage_score":  state.test_coverage.coverage_score if state.test_coverage else 0,
+                        "documentation_score":  state.documentation.score if state.documentation else 0,
+                        "security_highlights":  review.security_highlights,
+                        "logic_highlights":     review.logic_highlights,
+                        "top_suggestions":      review.top_suggestions,
                         "estimated_review_time_minutes": review.estimated_review_time_minutes,
+                        "missing_test_cases": state.test_coverage.missing_test_cases if state.test_coverage else [],
+                        "missing_docstrings":  state.documentation.missing_docstrings if state.documentation else [],
+                        "missing_type_hints":  state.documentation.missing_type_hints if state.documentation else [],
                         "errors": state.errors,
                     }
                 })
