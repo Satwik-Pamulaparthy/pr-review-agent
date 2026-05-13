@@ -81,7 +81,11 @@ AGENTS = [
     ("synthesis",     "📋", "Final Synthesis"),
 ]
 
-WS_URL = "ws://localhost:8000/review/stream"
+import os
+WS_URL = os.getenv(
+    "API_WS_URL",
+    "ws://localhost:8000/review/stream"  # fallback for local dev
+)
 
 
 # ── WebSocket runner (runs in a background thread) ────────────────────────────
