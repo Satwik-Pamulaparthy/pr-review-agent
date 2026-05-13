@@ -596,7 +596,7 @@ def main():
     st.markdown("""
     <div class="ra-hero">
       <div class="ra-eyebrow">⚡ Powered by GPT-4o + LangGraph</div>
-      <h1 class="ra-h1">AI code review<br>in 30 seconds</h1>
+      <h1 class="ra-h1">AI Code Review</h1>
       <p class="ra-sub" style="text-align:center;margin-left:auto;margin-right:auto;">
       Great code doesn't review itself. Paste a GitHub PR and get five specialist agents
       to do what most teams don't have time for — a thorough, structured review in under 30 seconds.</p>
