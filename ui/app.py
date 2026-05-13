@@ -40,9 +40,8 @@ header[data-testid="stHeader"] { display: none; }
 }
 .ra-logo-icon {
     width: 30px; height: 30px;
-    background: #1a1a1a; border-radius: 8px;
     display: inline-flex; align-items: center;
-    justify-content: center; margin-right: 10px;
+    justify-content: center; margin-right: 8px;
     vertical-align: middle;
 }
 .ra-logo-name {
@@ -565,7 +564,24 @@ def main():
     st.markdown("""
     <div class="ra-nav">
       <div>
-        <div class="ra-logo-icon">🔍</div>
+        <div class="ra-logo-icon">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="navgrad" x1="0" y1="0" x2="28" y2="28" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#9333EA"/>
+                <stop offset="100%" stop-color="#4169D4"/>
+              </linearGradient>
+            </defs>
+            <circle cx="11" cy="11" r="9" stroke="url(#navgrad)" stroke-width="1.9" fill="none"/>
+            <path d="M8 2.8C5.5 5.5 5.5 16.5 8 19.2" stroke="url(#navgrad)" stroke-width="1.9" fill="none" stroke-linecap="round"/>
+            <path d="M14 2.8C16.5 5.5 16.5 16.5 14 19.2" stroke="url(#navgrad)" stroke-width="1.9" fill="none" stroke-linecap="round"/>
+            <path d="M2.5 8.5Q11 11 19.5 8.5" stroke="url(#navgrad)" stroke-width="1.9" fill="none" stroke-linecap="round"/>
+            <line x1="2" y1="11" x2="20" y2="11" stroke="url(#navgrad)" stroke-width="1.9" stroke-linecap="round"/>
+            <path d="M2.5 13.5Q11 11 19.5 13.5" stroke="url(#navgrad)" stroke-width="1.9" fill="none" stroke-linecap="round"/>
+            <circle cx="20" cy="20" r="4.5" stroke="url(#navgrad)" stroke-width="1.9" fill="none"/>
+            <line x1="23.2" y1="23.2" x2="26.5" y2="26.5" stroke="url(#navgrad)" stroke-width="1.9" stroke-linecap="round"/>
+          </svg>
+        </div>
         <span class="ra-logo-name">ReviewAgent</span>
       </div>
       <div class="ra-nav-right">
