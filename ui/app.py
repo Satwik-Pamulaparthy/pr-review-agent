@@ -504,7 +504,7 @@ def main():
       security, logic, test coverage, and docs — then deliver a structured report.</p>
     """, unsafe_allow_html=True)
 
-    col_input, col_btn = st.columns([5, 1])
+    _, col_input, col_btn, _ = st.columns([2, 3.5, 0.8, 2])
     with col_input:
         pr_url = st.text_input(
             "pr_url",
