@@ -120,78 +120,213 @@ header[data-testid="stHeader"] { display: none; }
 /* ═══════════════════════════════════════
    HERO
 ═══════════════════════════════════════ */
-.rv-hero { position: relative; z-index: 5; text-align: center; padding: 88px 24px 16px; }
-.rv-eyebrow {
-    display: inline-flex; align-items: center; gap: 6px;
-    font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
-    text-transform: uppercase; color: #a78bfa;
-    background: rgba(139,92,246,0.1); padding: 5px 14px;
-    border-radius: 99px; margin-bottom: 28px;
-    border: 1px solid rgba(139,92,246,0.22);
-    animation: fadeInUp 0.6s ease both;
+.rv-hero { position: relative; z-index: 5; text-align: center; padding: 80px 24px 0; }
+.rv-badge-row {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    margin-bottom: 32px; flex-wrap: wrap;
+    animation: fadeInUp 0.5s ease both;
 }
+.rv-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 11px; font-weight: 600; letter-spacing: 0.06em;
+    padding: 4px 12px; border-radius: 99px;
+    border: 1px solid rgba(255,255,255,0.08);
+    color: #71717a; background: rgba(255,255,255,0.03);
+}
+.rv-badge-accent {
+    background: rgba(139,92,246,0.12);
+    color: #a78bfa; border-color: rgba(139,92,246,0.25);
+}
+.rv-badge-dot { width: 5px; height: 5px; border-radius: 50%; background: #22c55e; flex-shrink: 0; }
 .rv-h1 {
-    font-size: 62px; font-weight: 900;
-    background: linear-gradient(135deg, #ffffff 0%, #c4b5fd 45%, #93c5fd 100%);
+    font-size: 72px; font-weight: 900;
+    background: linear-gradient(135deg, #ffffff 0%, #c4b5fd 50%, #93c5fd 100%);
     -webkit-background-clip: text; -webkit-text-fill-color: transparent;
     background-clip: text;
-    letter-spacing: -0.045em; line-height: 1.06; margin-bottom: 22px;
-    animation: fadeInUp 0.6s 0.1s ease both;
+    letter-spacing: -0.05em; line-height: 1.03; margin-bottom: 24px;
+    animation: fadeInUp 0.5s 0.08s ease both;
 }
+.rv-h1 em { font-style: normal; color: #a78bfa; -webkit-text-fill-color: #a78bfa; }
 .rv-sub {
-    font-size: 17px; color: #52525b; max-width: 580px;
-    margin: 0 auto 40px; line-height: 1.75; font-weight: 400;
-    animation: fadeInUp 0.6s 0.2s ease both;
+    font-size: 18px; color: #71717a; max-width: 520px;
+    margin: 0 auto 36px; line-height: 1.7; font-weight: 400;
+    animation: fadeInUp 0.5s 0.16s ease both;
 }
-.rv-input-row { animation: fadeInUp 0.6s 0.3s ease both; }
-.rv-demo-row  {
+.rv-input-row { animation: fadeInUp 0.5s 0.24s ease both; }
+
+/* Stats pills row */
+.rv-stat-pills {
     display: flex; align-items: center; justify-content: center;
-    gap: 16px; margin-top: 14px; margin-bottom: 44px;
+    flex-wrap: wrap; gap: 8px; margin-top: 20px; margin-bottom: 16px;
+    animation: fadeInUp 0.5s 0.32s ease both;
+}
+.rv-stat-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 12px; font-weight: 500; color: #52525b;
+    padding: 6px 14px; border-radius: 99px;
+    border: 1px solid rgba(255,255,255,0.06);
+    background: rgba(255,255,255,0.02);
+}
+.rv-stat-pill-icon { font-size: 13px; }
+.rv-stat-pill-sep  { width: 1px; height: 14px; background: rgba(255,255,255,0.07); margin: 0 4px; }
+
+/* Product preview card */
+.rv-preview-wrap {
+    max-width: 740px; margin: 44px auto 0;
+    position: relative; z-index: 5;
     animation: fadeInUp 0.6s 0.4s ease both;
+}
+.rv-preview-glow {
+    position: absolute; top: -60px; left: 50%; transform: translateX(-50%);
+    width: 500px; height: 200px;
+    background: radial-gradient(ellipse, rgba(139,92,246,0.18) 0%, transparent 70%);
+    pointer-events: none;
+}
+.rv-preview-card {
+    background: rgba(255,255,255,0.025);
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px; overflow: hidden;
+    box-shadow: 0 32px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(139,92,246,0.08);
+}
+.rv-pc-bar {
+    display: flex; align-items: center; gap: 7px;
+    padding: 12px 18px; border-bottom: 1px solid rgba(255,255,255,0.06);
+    background: rgba(255,255,255,0.015);
+}
+.rv-pc-dot { width: 10px; height: 10px; border-radius: 50%; }
+.rv-pc-title {
+    font-size: 12px; color: #52525b; font-weight: 500;
+    margin-left: 6px; flex: 1; text-align: center; letter-spacing: 0.01em;
+}
+.rv-pc-body { padding: 20px 22px; display: flex; gap: 20px; align-items: flex-start; }
+.rv-pc-left { flex: 0 0 120px; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.rv-pc-right { flex: 1; min-width: 0; }
+.rv-pc-score-label {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+    color: #52525b; text-align: center;
+}
+.rv-pc-rec {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 11px; font-weight: 700; padding: 4px 10px;
+    border-radius: 8px; background: rgba(34,197,94,0.12);
+    color: #4ade80; border: 1px solid rgba(34,197,94,0.22);
+}
+.rv-pc-meta { font-size: 11px; color: #3f3f46; margin-bottom: 12px; }
+.rv-pc-meta strong { color: #71717a; }
+.rv-pc-finding {
+    display: flex; align-items: flex-start; gap: 8px;
+    padding: 8px 10px; border-radius: 8px; margin-bottom: 6px;
+    background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05);
+}
+.rv-pc-finding:last-child { margin-bottom: 0; }
+.rv-pc-f-bar { width: 3px; border-radius: 2px; align-self: stretch; flex-shrink: 0; min-height: 32px; }
+.rv-pc-f-title { font-size: 11px; font-weight: 600; color: #a1a1aa; margin-bottom: 2px; }
+.rv-pc-f-desc  { font-size: 10px; color: #52525b; line-height: 1.5; }
+.rv-pc-f-badge {
+    font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 4px;
+    border: 1px solid; letter-spacing: 0.04em; text-transform: uppercase;
+    margin-left: auto; flex-shrink: 0; white-space: nowrap;
+    align-self: flex-start;
+}
+
+/* Demo link row */
+.rv-demo-row {
+    display: flex; align-items: center; justify-content: center;
+    gap: 16px; margin-top: 14px; margin-bottom: 0;
+    animation: fadeInUp 0.5s 0.32s ease both;
 }
 .rv-btn-demo {
     display: inline-flex; align-items: center; gap: 6px;
-    font-size: 13px; font-weight: 500; color: #52525b;
-    text-decoration: none; padding: 9px 18px;
-    border: 1px solid rgba(255,255,255,0.07);
-    border-radius: 10px; background: rgba(255,255,255,0.03);
+    font-size: 12px; font-weight: 500; color: #3f3f46;
+    text-decoration: none; padding: 7px 16px;
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 8px; background: rgba(255,255,255,0.02);
     transition: color 0.2s, border-color 0.2s, background 0.2s;
 }
-.rv-btn-demo:hover { color: #a1a1aa; border-color: rgba(255,255,255,0.13); background: rgba(255,255,255,0.06); }
-.rv-trust {
-    display: flex; align-items: center; justify-content: center;
-    flex-wrap: wrap; gap: 10px; margin-bottom: 64px;
-    font-size: 12px; color: #3f3f46;
-    animation: fadeInUp 0.6s 0.5s ease both;
+.rv-btn-demo:hover { color: #71717a; border-color: rgba(255,255,255,0.11); background: rgba(255,255,255,0.04); }
+
+/* ═══════════════════════════════════════
+   FEATURE GRID
+═══════════════════════════════════════ */
+.rv-feature-header {
+    text-align: center; margin-bottom: 28px;
 }
-.rv-trust-dot { width: 3px; height: 3px; border-radius: 50%; background: #3f3f46; }
-.rv-trust-hi  { color: #71717a; font-weight: 500; }
+.rv-feature-header-label {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+    color: #3f3f46; margin-bottom: 10px;
+}
+.rv-feature-header-title {
+    font-size: 26px; font-weight: 800; color: #e4e4e7;
+    letter-spacing: -0.03em; line-height: 1.2;
+}
+.rv-feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px; margin-bottom: 16px;
+}
+.rv-feature-card {
+    background: rgba(255,255,255,0.02);
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 16px; padding: 20px;
+    transition: border-color 0.2s, background 0.2s, transform 0.2s;
+}
+.rv-feature-card:hover {
+    border-color: rgba(139,92,246,0.22);
+    background: rgba(139,92,246,0.03);
+    transform: translateY(-2px);
+}
+.rv-fc-icon {
+    font-size: 22px; margin-bottom: 12px; display: block;
+    filter: drop-shadow(0 0 8px rgba(139,92,246,0.35));
+}
+.rv-fc-title { font-size: 13px; font-weight: 700; color: #e4e4e7; margin-bottom: 6px; }
+.rv-fc-desc  { font-size: 12px; color: #3f3f46; line-height: 1.65; }
+.rv-fc-tags  { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 12px; }
+.rv-fc-tag   {
+    font-size: 10px; font-weight: 500; color: #52525b;
+    background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07);
+    padding: 2px 7px; border-radius: 4px;
+}
 
 /* ═══════════════════════════════════════
    HOW IT WORKS
 ═══════════════════════════════════════ */
+.rv-steps-header { text-align: center; margin-bottom: 24px; }
+.rv-steps-title {
+    font-size: 22px; font-weight: 800; color: #e4e4e7;
+    letter-spacing: -0.03em;
+}
 .rv-how-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 14px; margin-bottom: 40px;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px; margin-bottom: 40px;
+    position: relative;
 }
 .rv-how-card {
     background: rgba(255,255,255,0.02);
     backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
     border: 1px solid rgba(255,255,255,0.07);
-    border-radius: 16px; padding: 22px;
-    display: flex; gap: 16px; align-items: flex-start;
+    border-radius: 16px; padding: 22px 20px;
     transition: border-color 0.2s, background 0.2s;
+    position: relative; overflow: hidden;
+}
+.rv-how-card::before {
+    content: attr(data-n);
+    position: absolute; top: -4px; right: 14px;
+    font-size: 56px; font-weight: 900; color: rgba(255,255,255,0.025);
+    letter-spacing: -0.04em; line-height: 1; pointer-events: none;
 }
 .rv-how-card:hover { border-color: rgba(139,92,246,0.25); background: rgba(139,92,246,0.04); }
-.rv-how-num {
-    width: 32px; height: 32px; border-radius: 10px;
-    background: linear-gradient(135deg,#8b5cf6,#3b82f6);
-    color: #fff; font-size: 13px; font-weight: 700;
-    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+.rv-how-ico {
+    width: 38px; height: 38px; border-radius: 11px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; margin-bottom: 14px;
+    background: rgba(139,92,246,0.1); border: 1px solid rgba(139,92,246,0.2);
 }
-.rv-how-title { font-size: 13px; font-weight: 600; color: #e4e4e7; margin-bottom: 5px; }
-.rv-how-desc  { font-size: 12px; color: #52525b; line-height: 1.65; }
+.rv-how-title { font-size: 13px; font-weight: 700; color: #e4e4e7; margin-bottom: 6px; }
+.rv-how-desc  { font-size: 12px; color: #3f3f46; line-height: 1.65; }
 
 /* ═══════════════════════════════════════
    WRAP + DIVIDER
@@ -524,9 +659,14 @@ header[data-testid="stHeader"] { display: none; }
 ═══════════════════════════════════════ */
 @media (max-width: 768px) {
     .rv-nav   { padding: 0 16px; }
-    .rv-h1    { font-size: 34px; }
+    .rv-h1    { font-size: 38px; }
     .rv-sub   { font-size: 15px; margin-bottom: 24px; }
-    .rv-hero  { padding: 56px 16px 12px; }
+    .rv-hero  { padding: 52px 16px 0; }
+    .rv-preview-wrap { margin-top: 28px; }
+    .rv-pc-body { flex-direction: column; gap: 14px; }
+    .rv-pc-left { flex: none; flex-direction: row; justify-content: center; align-items: center; width: 100%; }
+    .rv-feature-grid { grid-template-columns: 1fr 1fr; }
+    .rv-stat-pills { gap: 6px; }
     .rv-stat-strip { flex-wrap: wrap; }
     .rv-stat  { min-width: 50%; border-bottom: 1px solid rgba(255,255,255,0.06); }
     .rv-quality-body  { flex-direction: column; align-items: center; }
@@ -959,11 +1099,15 @@ def main():
     # ── Hero ──────────────────────────────────────────────────────────────────
     st.markdown("""
     <div class="rv-hero">
-      <div class="rv-eyebrow">⚡ Powered by GPT-4o &nbsp;·&nbsp; LangGraph</div>
-      <h1 class="rv-h1">AI-powered Pull Request<br>Reviews in Seconds</h1>
+      <div class="rv-badge-row">
+        <span class="rv-badge rv-badge-accent">⚡ GPT-4o &nbsp;·&nbsp; LangGraph</span>
+        <span class="rv-badge"><span class="rv-badge-dot"></span>&nbsp;API Live</span>
+        <span class="rv-badge">Free &amp; Open Source</span>
+      </div>
+      <h1 class="rv-h1">Great code doesn't<br>review <em>itself.</em></h1>
       <p class="rv-sub">
-        Catch bugs, improve readability, enforce best practices,<br>
-        and generate intelligent review comments automatically.
+        Paste a GitHub PR link. Five AI agents analyze security, logic,
+        test coverage, and documentation — full report in seconds.
       </p>
     </div>
     """, unsafe_allow_html=True)
@@ -984,42 +1128,151 @@ def main():
     st.markdown("""
     <div class="rv-demo-row">
       <a href="https://github.com/fastapi/fastapi/pull/13474" target="_blank" class="rv-btn-demo">
-        View Demo PR ↗
+        Try demo PR ↗
       </a>
     </div>
-    <div class="rv-trust">
-      <span class="rv-trust-hi">Built for developers</span>
-      <div class="rv-trust-dot"></div>
-      <span>students</span>
-      <div class="rv-trust-dot"></div>
-      <span>engineering teams</span>
+    <div class="rv-stat-pills">
+      <span class="rv-stat-pill"><span class="rv-stat-pill-icon">🔒</span>Security audit</span>
+      <span class="rv-stat-pill-sep"></span>
+      <span class="rv-stat-pill"><span class="rv-stat-pill-icon">🧠</span>Logic review</span>
+      <span class="rv-stat-pill-sep"></span>
+      <span class="rv-stat-pill"><span class="rv-stat-pill-icon">🧪</span>Test coverage</span>
+      <span class="rv-stat-pill-sep"></span>
+      <span class="rv-stat-pill"><span class="rv-stat-pill-icon">📝</span>Documentation</span>
+      <span class="rv-stat-pill-sep"></span>
+      <span class="rv-stat-pill"><span class="rv-stat-pill-icon">⚡</span>~30 seconds</span>
+    </div>
+
+    <div class="rv-preview-wrap">
+      <div class="rv-preview-glow"></div>
+      <div class="rv-preview-card">
+        <div class="rv-pc-bar">
+          <div class="rv-pc-dot" style="background:#ef4444;"></div>
+          <div class="rv-pc-dot" style="background:#fbbf24;"></div>
+          <div class="rv-pc-dot" style="background:#22c55e;"></div>
+          <span class="rv-pc-title">Revora — AI Review Report</span>
+        </div>
+        <div class="rv-pc-body">
+          <div class="rv-pc-left">
+            <svg width="100" height="100" viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="7"/>
+              <circle cx="50" cy="50" r="40" fill="none" stroke="url(#pg)" stroke-width="7"
+                      stroke-dasharray="213 251" stroke-linecap="round" transform="rotate(-90 50 50)"/>
+              <defs>
+                <linearGradient id="pg" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="#8b5cf6"/>
+                  <stop offset="100%" stop-color="#3b82f6"/>
+                </linearGradient>
+              </defs>
+              <text x="50" y="45" text-anchor="middle" font-size="22" font-weight="900"
+                    fill="#f4f4f5" font-family="Inter,sans-serif">85</text>
+              <text x="50" y="59" text-anchor="middle" font-size="9" fill="#52525b"
+                    font-family="Inter,sans-serif" font-weight="600">out of 100</text>
+            </svg>
+            <div class="rv-pc-score-label">Quality Score</div>
+            <div class="rv-pc-rec">✓ Approved</div>
+          </div>
+          <div class="rv-pc-right">
+            <div class="rv-pc-meta"><strong>fastapi/fastapi</strong> · PR #1234 · 3 files · +87 −12</div>
+            <div class="rv-pc-finding">
+              <div class="rv-pc-f-bar" style="background:#f87171;"></div>
+              <div style="flex:1;min-width:0;">
+                <div class="rv-pc-f-title">Unsanitized user input in query builder</div>
+                <div class="rv-pc-f-desc">SQL injection risk — use parameterized queries</div>
+              </div>
+              <div class="rv-pc-f-badge" style="background:rgba(239,68,68,0.14);color:#f87171;border-color:rgba(239,68,68,0.25);">HIGH</div>
+            </div>
+            <div class="rv-pc-finding">
+              <div class="rv-pc-f-bar" style="background:#facc15;"></div>
+              <div style="flex:1;min-width:0;">
+                <div class="rv-pc-f-title">Missing edge case in pagination logic</div>
+                <div class="rv-pc-f-desc">Off-by-one error when page count equals limit</div>
+              </div>
+              <div class="rv-pc-f-badge" style="background:rgba(234,179,8,0.14);color:#facc15;border-color:rgba(234,179,8,0.25);">MED</div>
+            </div>
+            <div class="rv-pc-finding">
+              <div class="rv-pc-f-bar" style="background:#60a5fa;"></div>
+              <div style="flex:1;min-width:0;">
+                <div class="rv-pc-f-title">No unit tests for new auth helper</div>
+                <div class="rv-pc-f-desc">3 functions added, 0 tests — coverage gap</div>
+              </div>
+              <div class="rv-pc-f-badge" style="background:rgba(59,130,246,0.14);color:#60a5fa;border-color:rgba(59,130,246,0.25);">LOW</div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
     """, unsafe_allow_html=True)
 
-    # ── How it works ──────────────────────────────────────────────────────────
-    st.markdown('<div class="rv-wrap">', unsafe_allow_html=True)
+    # ── Feature grid + How it works ───────────────────────────────────────────
+    st.markdown('<div class="rv-wrap" style="margin-top:60px;">', unsafe_allow_html=True)
     st.markdown("""
+    <div class="rv-feature-header">
+      <div class="rv-feature-header-label">What Revora checks</div>
+      <div class="rv-feature-header-title">Four specialist AI agents</div>
+    </div>
+    <div class="rv-feature-grid">
+      <div class="rv-feature-card">
+        <span class="rv-fc-icon">🔒</span>
+        <div class="rv-fc-title">Security Audit</div>
+        <div class="rv-fc-desc">Scans for vulnerabilities before they reach production.</div>
+        <div class="rv-fc-tags">
+          <span class="rv-fc-tag">SQL injection</span>
+          <span class="rv-fc-tag">XSS</span>
+          <span class="rv-fc-tag">Secrets</span>
+          <span class="rv-fc-tag">Auth flaws</span>
+        </div>
+      </div>
+      <div class="rv-feature-card">
+        <span class="rv-fc-icon">🧠</span>
+        <div class="rv-fc-title">Logic Review</div>
+        <div class="rv-fc-desc">Catches bugs, race conditions, and incorrect assumptions.</div>
+        <div class="rv-fc-tags">
+          <span class="rv-fc-tag">Edge cases</span>
+          <span class="rv-fc-tag">Off-by-one</span>
+          <span class="rv-fc-tag">Null checks</span>
+        </div>
+      </div>
+      <div class="rv-feature-card">
+        <span class="rv-fc-icon">🧪</span>
+        <div class="rv-fc-title">Test Coverage</div>
+        <div class="rv-fc-desc">Identifies untested code paths and missing test cases.</div>
+        <div class="rv-fc-tags">
+          <span class="rv-fc-tag">Coverage gaps</span>
+          <span class="rv-fc-tag">Missing mocks</span>
+          <span class="rv-fc-tag">Assertions</span>
+        </div>
+      </div>
+      <div class="rv-feature-card">
+        <span class="rv-fc-icon">📝</span>
+        <div class="rv-fc-title">Documentation</div>
+        <div class="rv-fc-desc">Flags missing docstrings, type hints, and inline comments.</div>
+        <div class="rv-fc-tags">
+          <span class="rv-fc-tag">Docstrings</span>
+          <span class="rv-fc-tag">Type hints</span>
+          <span class="rv-fc-tag">README</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="rv-steps-header" style="margin-top:40px;">
+      <div class="rv-steps-title">How it works</div>
+    </div>
     <div class="rv-how-grid">
-      <div class="rv-how-card">
-        <div class="rv-how-num">1</div>
-        <div>
-          <div class="rv-how-title">Paste a GitHub PR link</div>
-          <div class="rv-how-desc">Any public repository. Copy the URL from your browser and paste it above.</div>
-        </div>
+      <div class="rv-how-card" data-n="1">
+        <div class="rv-how-ico">🔗</div>
+        <div class="rv-how-title">Paste any GitHub PR</div>
+        <div class="rv-how-desc">Works with any public repo. Just copy the URL from your browser tab.</div>
       </div>
-      <div class="rv-how-card">
-        <div class="rv-how-num">2</div>
-        <div>
-          <div class="rv-how-title">Five agents review it live</div>
-          <div class="rv-how-desc">Security, logic, tests, docs, and synthesis all stream back in real time.</div>
-        </div>
+      <div class="rv-how-card" data-n="2">
+        <div class="rv-how-ico">⚡</div>
+        <div class="rv-how-title">Agents run in parallel</div>
+        <div class="rv-how-desc">Watch five AI agents stream their findings back live in real time.</div>
       </div>
-      <div class="rv-how-card">
-        <div class="rv-how-num">3</div>
-        <div>
-          <div class="rv-how-title">Get a structured report</div>
-          <div class="rv-how-desc">A score out of 100, a merge recommendation, and exactly what to fix first.</div>
-        </div>
+      <div class="rv-how-card" data-n="3">
+        <div class="rv-how-ico">📊</div>
+        <div class="rv-how-title">Get a full report</div>
+        <div class="rv-how-desc">Score, recommendation, severity-ranked findings, and top fixes.</div>
       </div>
     </div>
     """, unsafe_allow_html=True)
