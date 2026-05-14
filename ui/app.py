@@ -5,6 +5,7 @@ import websockets
 import threading
 import queue
 import os
+import re as _re
 
 st.set_page_config(
     page_title="Revora — AI PR Reviews",
@@ -21,16 +22,18 @@ st.markdown("""
 html, body, [class*="css"] {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
 }
-[data-testid="stAppViewContainer"] { background: #09090b !important; }
-[data-testid="stMain"]             { padding: 0 !important; }
-[data-testid="stMainBlockContainer"]{ padding: 0 !important; max-width: 100% !important; }
-.block-container                   { padding: 0 !important; max-width: 100% !important; }
-section[data-testid="stSidebar"]   { display: none; }
+[data-testid="stAppViewContainer"]   { background: #09090b !important; }
+[data-testid="stMain"]               { padding: 0 !important; }
+[data-testid="stMainBlockContainer"] { padding: 0 !important; max-width: 100% !important; }
+.block-container                     { padding: 0 !important; max-width: 100% !important; }
+section[data-testid="stSidebar"]     { display: none; }
 footer { display: none; }
 #MainMenu { display: none; }
 header[data-testid="stHeader"] { display: none; }
 
-/* ── Animated background ── */
+/* ═══════════════════════════════════════
+   ANIMATED BACKGROUND
+═══════════════════════════════════════ */
 .rv-bg {
     position: fixed; top: 0; left: 0;
     width: 100%; height: 100%;
@@ -62,7 +65,6 @@ header[data-testid="stHeader"] { display: none; }
     33%       { transform: translate(40px,-30px); }
     66%       { transform: translate(-28px,22px); }
 }
-
 .rv-particle {
     position: absolute; border-radius: 50%;
     background: rgba(139,92,246,0.45);
@@ -75,7 +77,6 @@ header[data-testid="stHeader"] { display: none; }
     94%  { opacity: 0.5; }
     100% { transform: translateY(-8vh);  opacity: 0; }
 }
-
 .rv-code-line {
     position: absolute;
     font-family: 'Fira Code', 'JetBrains Mono', monospace;
@@ -90,7 +91,9 @@ header[data-testid="stHeader"] { display: none; }
     100% { transform: translateY(-6vh);  opacity: 0; }
 }
 
-/* ── Nav ── */
+/* ═══════════════════════════════════════
+   NAV
+═══════════════════════════════════════ */
 .rv-nav {
     position: relative; z-index: 10;
     background: rgba(9,9,11,0.75);
@@ -114,11 +117,10 @@ header[data-testid="stHeader"] { display: none; }
 .rv-pill-green { background: rgba(34,197,94,0.1);   color: #4ade80; border-color: rgba(34,197,94,0.25); }
 .rv-pill-gray  { background: rgba(255,255,255,0.04); color: #52525b; border-color: rgba(255,255,255,0.08); }
 
-/* ── Hero ── */
-.rv-hero {
-    position: relative; z-index: 5;
-    text-align: center; padding: 88px 24px 16px;
-}
+/* ═══════════════════════════════════════
+   HERO
+═══════════════════════════════════════ */
+.rv-hero { position: relative; z-index: 5; text-align: center; padding: 88px 24px 16px; }
 .rv-eyebrow {
     display: inline-flex; align-items: center; gap: 6px;
     font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
@@ -156,18 +158,18 @@ header[data-testid="stHeader"] { display: none; }
     transition: color 0.2s, border-color 0.2s, background 0.2s;
 }
 .rv-btn-demo:hover { color: #a1a1aa; border-color: rgba(255,255,255,0.13); background: rgba(255,255,255,0.06); }
-
-/* Trust strip */
 .rv-trust {
     display: flex; align-items: center; justify-content: center;
     flex-wrap: wrap; gap: 10px; margin-bottom: 64px;
     font-size: 12px; color: #3f3f46;
     animation: fadeInUp 0.6s 0.5s ease both;
 }
-.rv-trust-dot  { width: 3px; height: 3px; border-radius: 50%; background: #3f3f46; }
-.rv-trust-hi   { color: #71717a; font-weight: 500; }
+.rv-trust-dot { width: 3px; height: 3px; border-radius: 50%; background: #3f3f46; }
+.rv-trust-hi  { color: #71717a; font-weight: 500; }
 
-/* How-it-works */
+/* ═══════════════════════════════════════
+   HOW IT WORKS
+═══════════════════════════════════════ */
 .rv-how-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -191,18 +193,20 @@ header[data-testid="stHeader"] { display: none; }
 .rv-how-title { font-size: 13px; font-weight: 600; color: #e4e4e7; margin-bottom: 5px; }
 .rv-how-desc  { font-size: 12px; color: #52525b; line-height: 1.65; }
 
-/* ── Wrap ── */
+/* ═══════════════════════════════════════
+   WRAP + DIVIDER
+═══════════════════════════════════════ */
 .rv-wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px 60px; position: relative; z-index: 5; }
-
-/* ── Divider ── */
-.ra-divider { display: flex; align-items: center; gap: 14px; margin: 28px 0 18px; }
-.ra-divider-line  { flex: 1; height: 1px; background: rgba(255,255,255,0.06); }
-.ra-divider-label {
-    font-size: 11px; font-weight: 700; color: #3f3f46;
-    letter-spacing: 0.08em; text-transform: uppercase; white-space: nowrap;
+.rv-divider { display: flex; align-items: center; gap: 14px; margin: 32px 0 20px; }
+.rv-divider-line  { flex: 1; height: 1px; background: rgba(255,255,255,0.06); }
+.rv-divider-label {
+    font-size: 10px; font-weight: 700; color: #3f3f46;
+    letter-spacing: 0.1em; text-transform: uppercase; white-space: nowrap;
 }
 
-/* ── Progress card ── */
+/* ═══════════════════════════════════════
+   AGENT PROGRESS (unchanged classes)
+═══════════════════════════════════════ */
 .ra-progress-card {
     background: rgba(255,255,255,0.02);
     backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
@@ -214,7 +218,6 @@ header[data-testid="stHeader"] { display: none; }
 .ra-progress-count  { font-size: 12px; color: #52525b; font-weight: 500; }
 .ra-pbar-bg   { height: 2px; background: rgba(255,255,255,0.06); border-radius: 99px; margin-bottom: 20px; overflow: hidden; }
 .ra-pbar-fill { height: 2px; background: linear-gradient(90deg,#8b5cf6,#3b82f6); border-radius: 99px; transition: width 0.4s ease; }
-
 .ra-agent-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
 .ra-agent-row:last-child { border-bottom: none; padding-bottom: 0; }
 .ra-dot      { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
@@ -231,163 +234,250 @@ header[data-testid="stHeader"] { display: none; }
 .ra-agent-detail      { font-size: 11px; color: #3f3f46; }
 .ra-agent-detail-done { color: #4ade80; }
 .ra-agent-detail-run  { color: #a78bfa; }
-.ra-badge      { font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 99px; letter-spacing: 0.04em; text-transform: uppercase; }
-.ra-badge-wait { background: rgba(255,255,255,0.04); color: #3f3f46; }
-.ra-badge-run  { background: rgba(139,92,246,0.15); color: #a78bfa; }
-.ra-badge-done { background: rgba(34,197,94,0.1);   color: #4ade80; }
-.ra-badge-err  { background: rgba(239,68,68,0.1);   color: #f87171; }
+.ra-badge      { font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 6px; letter-spacing: 0.04em; text-transform: uppercase; border: 1px solid; }
+.ra-badge-wait { background: rgba(255,255,255,0.04); color: #3f3f46; border-color: rgba(255,255,255,0.06); }
+.ra-badge-run  { background: rgba(139,92,246,0.15); color: #a78bfa; border-color: rgba(139,92,246,0.25); }
+.ra-badge-done { background: rgba(34,197,94,0.1);   color: #4ade80; border-color: rgba(34,197,94,0.2); }
+.ra-badge-err  { background: rgba(239,68,68,0.1);   color: #f87171; border-color: rgba(239,68,68,0.2); }
 
-/* ── Score grid ── */
-.ra-score-grid {
-    display: grid; grid-template-columns: repeat(6, 1fr);
-    gap: 10px; margin-bottom: 18px;
-}
-.ra-score-card {
-    background: rgba(255,255,255,0.02);
-    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+/* ═══════════════════════════════════════
+   DASHBOARD SECTION CARDS
+═══════════════════════════════════════ */
+.rv-section {
+    background: rgba(255,255,255,0.025);
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
     border: 1px solid rgba(255,255,255,0.07);
-    border-radius: 14px; padding: 18px 10px; text-align: center;
-    transition: border-color 0.2s, background 0.2s;
+    border-radius: 16px; margin-bottom: 12px; overflow: hidden;
+    transition: border-color 0.2s, box-shadow 0.2s;
 }
-.ra-score-card:hover { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.12); }
-.ra-score-num { font-size: 28px; font-weight: 800; letter-spacing: -0.04em; line-height: 1; margin-bottom: 6px; }
-.ra-score-lbl { font-size: 10px; font-weight: 600; color: #3f3f46; text-transform: uppercase; letter-spacing: 0.06em; }
-.c-green  { color: #4ade80; }
-.c-amber  { color: #fbbf24; }
-.c-red    { color: #f87171; }
-.c-purple { color: #a78bfa; }
+.rv-section:hover { border-color: rgba(255,255,255,0.11); box-shadow: 0 4px 24px rgba(0,0,0,0.3); }
 
-/* ── Recommendation ── */
-.ra-rec-card { border-radius: 14px; padding: 18px 22px; margin-bottom: 18px; display: flex; gap: 14px; align-items: flex-start; }
-.ra-rec-approve { background: rgba(34,197,94,0.06);  border: 1px solid rgba(34,197,94,0.2); }
-.ra-rec-request { background: rgba(239,68,68,0.06);  border: 1px solid rgba(239,68,68,0.2); }
-.ra-rec-discuss { background: rgba(251,191,36,0.06); border: 1px solid rgba(251,191,36,0.2); }
-.ra-rec-icon { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
-.ra-rec-title-approve { font-size: 15px; font-weight: 700; color: #4ade80;  margin-bottom: 4px; }
-.ra-rec-title-request { font-size: 15px; font-weight: 700; color: #f87171;  margin-bottom: 4px; }
-.ra-rec-title-discuss { font-size: 15px; font-weight: 700; color: #fbbf24;  margin-bottom: 4px; }
-.ra-rec-desc-approve  { font-size: 13px; color: #86efac; line-height: 1.6; }
-.ra-rec-desc-request  { font-size: 13px; color: #fca5a5; line-height: 1.6; }
-.ra-rec-desc-discuss  { font-size: 13px; color: #fde68a; line-height: 1.6; }
+.rv-section details > summary {
+    cursor: pointer; list-style: none; user-select: none;
+    padding: 16px 20px;
+    display: flex; align-items: center; justify-content: space-between;
+    border-bottom: 1px solid transparent;
+    transition: background 0.15s;
+}
+.rv-section details > summary::-webkit-details-marker { display: none; }
+.rv-section details > summary::marker { display: none; }
+.rv-section details[open] > summary { border-bottom-color: rgba(255,255,255,0.06); background: rgba(255,255,255,0.01); }
+.rv-section details > summary:hover  { background: rgba(255,255,255,0.02); }
 
-/* ── Summary ── */
-.ra-summary {
-    background: rgba(139,92,246,0.08); border: 1px solid rgba(139,92,246,0.18);
-    border-radius: 12px; padding: 16px 18px; margin-bottom: 20px;
-    font-size: 13px; color: #c4b5fd; line-height: 1.75;
-    display: flex; gap: 10px;
+.rv-sh-left    { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.rv-sh-icon    {
+    width: 30px; height: 30px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; flex-shrink: 0; border: 1px solid;
+}
+.rv-sh-title   { font-size: 13px; font-weight: 600; color: #e4e4e7; }
+.rv-sh-meta    { font-size: 11px; color: #52525b; }
+.rv-sh-chevron { color: #52525b; font-size: 18px; transition: transform 0.25s ease; flex-shrink: 0; margin-left: 8px; }
+.rv-section details[open] .rv-sh-chevron { transform: rotate(90deg); }
+.rv-sb { padding: 20px; }
+
+/* Severity badge system */
+.rv-sev {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 10px; font-weight: 700; padding: 3px 8px;
+    border-radius: 6px; letter-spacing: 0.05em; text-transform: uppercase; border: 1px solid;
+}
+.rv-sev-critical { background: rgba(239,68,68,0.14);  color: #f87171; border-color: rgba(239,68,68,0.25); }
+.rv-sev-high     { background: rgba(249,115,22,0.14); color: #fb923c; border-color: rgba(249,115,22,0.25); }
+.rv-sev-medium   { background: rgba(234,179,8,0.14);  color: #facc15; border-color: rgba(234,179,8,0.25); }
+.rv-sev-low      { background: rgba(59,130,246,0.14); color: #60a5fa; border-color: rgba(59,130,246,0.25); }
+.rv-sev-ok       { background: rgba(34,197,94,0.12);  color: #4ade80; border-color: rgba(34,197,94,0.22); }
+.rv-sev-warn     { background: rgba(234,179,8,0.14);  color: #facc15; border-color: rgba(234,179,8,0.25); }
+.rv-sev-info     { background: rgba(59,130,246,0.14); color: #60a5fa; border-color: rgba(59,130,246,0.25); }
+
+/* ═══════════════════════════════════════
+   1. REPOSITORY OVERVIEW
+═══════════════════════════════════════ */
+.rv-repo-header { display: flex; align-items: center; gap: 14px; padding: 20px; }
+.rv-repo-avatar { flex-shrink: 0; }
+.rv-repo-name   { font-size: 16px; font-weight: 700; color: #f4f4f5; letter-spacing: -0.02em; margin-bottom: 4px; }
+.rv-repo-sub    { font-size: 12px; color: #52525b; font-family: monospace; }
+.rv-repo-chips  { display: flex; gap: 6px; flex-wrap: wrap; margin-left: auto; align-items: center; }
+.rv-chip {
+    font-size: 11px; padding: 4px 10px; border-radius: 99px; font-weight: 500;
+    border: 1px solid;
+}
+.rv-chip-purple { background: rgba(139,92,246,0.1); color: #a78bfa; border-color: rgba(139,92,246,0.22); }
+.rv-chip-zinc   { background: rgba(255,255,255,0.04); color: #71717a; border-color: rgba(255,255,255,0.08); }
+.rv-chip-green  { background: rgba(34,197,94,0.1); color: #4ade80; border-color: rgba(34,197,94,0.2); }
+.rv-chip-red    { background: rgba(239,68,68,0.1); color: #f87171; border-color: rgba(239,68,68,0.2); }
+
+.rv-stat-strip { display: flex; border-top: 1px solid rgba(255,255,255,0.06); }
+.rv-stat { flex: 1; padding: 14px 16px; border-right: 1px solid rgba(255,255,255,0.06); text-align: center; }
+.rv-stat:last-child { border-right: none; }
+.rv-stat-val { font-size: 20px; font-weight: 700; color: #f4f4f5; letter-spacing: -0.03em; display: block; margin-bottom: 3px; }
+.rv-stat-lbl { font-size: 10px; color: #3f3f46; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; }
+.rv-stat-add { color: #4ade80 !important; }
+.rv-stat-del { color: #f87171 !important; }
+
+/* ═══════════════════════════════════════
+   2. CODE QUALITY SCORE
+═══════════════════════════════════════ */
+.rv-quality-body { display: flex; gap: 28px; align-items: center; }
+.rv-ring-wrap    { flex-shrink: 0; }
+.rv-metrics-list { flex: 1; display: flex; flex-direction: column; gap: 13px; }
+.rv-metric-row   { display: flex; align-items: center; gap: 12px; }
+.rv-metric-lbl   { font-size: 12px; color: #71717a; font-weight: 500; width: 88px; flex-shrink: 0; }
+.rv-metric-bar-bg { flex: 1; height: 5px; background: rgba(255,255,255,0.06); border-radius: 99px; overflow: hidden; }
+.rv-metric-bar   { height: 5px; border-radius: 99px; transition: width 0.7s cubic-bezier(.4,0,.2,1); }
+.rv-bar-green    { background: linear-gradient(90deg,#22c55e,#4ade80); }
+.rv-bar-amber    { background: linear-gradient(90deg,#d97706,#fbbf24); }
+.rv-bar-red      { background: linear-gradient(90deg,#dc2626,#f87171); }
+.rv-bar-purple   { background: linear-gradient(90deg,#8b5cf6,#a78bfa); }
+.rv-metric-val   { font-size: 12px; font-weight: 700; color: #a1a1aa; width: 26px; text-align: right; flex-shrink: 0; }
+
+/* ═══════════════════════════════════════
+   3. RISK ANALYSIS
+═══════════════════════════════════════ */
+.rv-risk-band {
+    display: flex; align-items: center; gap: 16px;
+    padding: 16px 18px; border-radius: 12px; margin-bottom: 16px;
+}
+.rv-risk-critical { background: rgba(239,68,68,0.07);  border: 1px solid rgba(239,68,68,0.18); }
+.rv-risk-high     { background: rgba(249,115,22,0.07); border: 1px solid rgba(249,115,22,0.18); }
+.rv-risk-medium   { background: rgba(59,130,246,0.07); border: 1px solid rgba(59,130,246,0.18); }
+.rv-risk-low      { background: rgba(34,197,94,0.07);  border: 1px solid rgba(34,197,94,0.18); }
+.rv-risk-label    { font-size: 17px; font-weight: 700; margin-bottom: 3px; }
+.rv-risk-desc     { font-size: 12px; opacity: 0.75; line-height: 1.5; }
+.rv-risk-icon     { font-size: 26px; flex-shrink: 0; }
+
+.rv-rec-row { display: flex; gap: 10px; align-items: center; padding: 12px 14px; border-radius: 10px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); }
+.rv-rec-icon { font-size: 20px; flex-shrink: 0; }
+.rv-rec-title { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+.rv-rec-sub   { font-size: 12px; opacity: 0.65; }
+
+/* ═══════════════════════════════════════
+   4. PULL REQUEST SUMMARY
+═══════════════════════════════════════ */
+.rv-summary-text { font-size: 14px; color: #a1a1aa; line-height: 1.85; padding: 2px 0; }
+.rv-ai-label {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 10px; font-weight: 700; letter-spacing: 0.07em;
+    text-transform: uppercase; color: #a78bfa;
+    background: rgba(139,92,246,0.1); padding: 3px 9px;
+    border-radius: 99px; border: 1px solid rgba(139,92,246,0.22);
+    margin-bottom: 14px; display: block; width: fit-content;
 }
 
-/* ── 3-col findings ── */
-.ra-cols { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 14px; margin-bottom: 16px; }
-.ra-col-card {
+/* ═══════════════════════════════════════
+   5 & 6. FINDINGS (Security + Logic)
+═══════════════════════════════════════ */
+.rv-finding {
+    display: flex; gap: 0; align-items: stretch;
+    border-radius: 10px; overflow: hidden;
     background: rgba(255,255,255,0.02);
-    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
     border: 1px solid rgba(255,255,255,0.07);
-    border-radius: 14px; padding: 18px;
-    transition: border-color 0.2s;
+    margin-bottom: 10px; transition: border-color 0.2s, background 0.15s;
 }
-.ra-col-card:hover { border-color: rgba(255,255,255,0.12); }
-.ra-col-head  { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
-.ra-col-title { font-size: 13px; font-weight: 700; color: #a1a1aa; display: flex; align-items: center; gap: 6px; }
+.rv-finding:last-child { margin-bottom: 0; }
+.rv-finding:hover { border-color: rgba(255,255,255,0.12); background: rgba(255,255,255,0.035); }
+.rv-finding-bar  { width: 3px; flex-shrink: 0; }
+.rv-finding-body { padding: 13px 14px; flex: 1; min-width: 0; }
+.rv-finding-top  { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; flex-wrap: wrap; }
+.rv-finding-title { font-size: 13px; font-weight: 600; color: #e4e4e7; }
+.rv-finding-file  { font-size: 10px; color: #3f3f46; font-family: monospace; margin-bottom: 6px; word-break: break-all; }
+.rv-finding-desc  { font-size: 12px; color: #71717a; line-height: 1.6; word-break: break-word; overflow-wrap: break-word; }
+.rv-bar-critical { background: #f87171; }
+.rv-bar-high     { background: #fb923c; }
+.rv-bar-medium   { background: #facc15; }
+.rv-bar-low      { background: #60a5fa; }
+.rv-bar-ok       { background: #4ade80; }
 
-/* ── Findings ── */
-.ra-finding {
-    border-left: 2px solid rgba(255,255,255,0.08); padding: 9px 12px;
-    margin-bottom: 8px; border-radius: 0 8px 8px 0;
-    background: rgba(255,255,255,0.02); overflow: hidden;
+.rv-allclear {
+    display: flex; align-items: center; gap: 10px;
+    padding: 14px 16px; border-radius: 10px;
+    background: rgba(34,197,94,0.06); border: 1px solid rgba(34,197,94,0.16);
+    font-size: 13px; color: #4ade80; font-weight: 500;
 }
-.ra-finding:last-child { margin-bottom: 0; }
-.ra-f-critical { border-left-color: #f87171; }
-.ra-f-high     { border-left-color: #fb923c; }
-.ra-f-medium   { border-left-color: #fbbf24; }
-.ra-f-low      { border-left-color: #60a5fa; }
-.ra-f-ok       { border-left-color: #4ade80; }
-.ra-f-sev          { font-size: 9px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 3px; }
-.ra-f-sev-critical { color: #f87171; }
-.ra-f-sev-high     { color: #fb923c; }
-.ra-f-sev-medium   { color: #fbbf24; }
-.ra-f-sev-low      { color: #60a5fa; }
-.ra-f-sev-ok       { color: #4ade80; }
-.ra-f-title { font-size: 12px; font-weight: 600; color: #a1a1aa; margin-bottom: 2px; word-break: break-word; overflow-wrap: break-word; }
-.ra-f-file  { font-size: 10px; color: #3f3f46; font-family: monospace; margin-bottom: 4px; word-break: break-all; overflow-wrap: break-word; white-space: normal; }
-.ra-f-desc  { font-size: 11px; color: #52525b; line-height: 1.5; word-break: break-word; overflow-wrap: break-word; }
 
-/* ── Suggestions ── */
-.ra-sugg-item { display: flex; gap: 10px; margin-bottom: 10px; align-items: flex-start; }
-.ra-sugg-item:last-child { margin-bottom: 0; }
-.ra-sugg-n {
-    width: 20px; height: 20px; border-radius: 6px;
-    background: rgba(139,92,246,0.18); color: #a78bfa; font-size: 10px;
-    font-weight: 700; display: flex; align-items: center;
-    justify-content: center; flex-shrink: 0; margin-top: 1px;
-}
-.ra-sugg-t { font-size: 12px; color: #71717a; line-height: 1.65; word-break: break-word; overflow-wrap: break-word; }
-
-/* ── Detail grid ── */
-.ra-detail-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 14px; margin-bottom: 24px; }
-.ra-detail-card {
+/* ═══════════════════════════════════════
+   7. SUGGESTED FIXES
+═══════════════════════════════════════ */
+.rv-fix {
+    display: flex; gap: 13px; align-items: flex-start;
+    padding: 13px 14px; border-radius: 10px;
     background: rgba(255,255,255,0.02);
-    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
     border: 1px solid rgba(255,255,255,0.07);
-    border-radius: 14px; padding: 18px;
+    margin-bottom: 10px; transition: border-color 0.2s;
 }
-.ra-detail-head  { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
-.ra-detail-title { font-size: 13px; font-weight: 700; color: #a1a1aa; }
-.ra-ring {
-    width: 42px; height: 42px; border-radius: 50%;
-    border: 2px solid rgba(34,197,94,0.3); display: flex;
-    align-items: center; justify-content: center;
-    font-size: 12px; font-weight: 800; color: #4ade80;
+.rv-fix:last-child { margin-bottom: 0; }
+.rv-fix:hover { border-color: rgba(139,92,246,0.22); }
+.rv-fix-num {
+    width: 22px; height: 22px; border-radius: 7px;
+    background: rgba(139,92,246,0.15); color: #a78bfa;
+    font-size: 10px; font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; margin-top: 1px;
 }
-.ra-ring-amber { border-color: rgba(251,191,36,0.3); color: #fbbf24; }
-.ra-missing-row {
-    display: flex; gap: 10px; align-items: flex-start;
+.rv-fix-text { font-size: 13px; color: #a1a1aa; line-height: 1.65; word-break: break-word; }
+
+/* ═══════════════════════════════════════
+   8. COMPLEXITY METRICS
+═══════════════════════════════════════ */
+.rv-complexity-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.rv-complexity-card {
+    padding: 18px; border-radius: 12px;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.07);
+}
+.rv-cx-head  { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+.rv-cx-title { font-size: 13px; font-weight: 600; color: #a1a1aa; }
+.rv-cx-ring  {
+    width: 40px; height: 40px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 800; border: 2px solid;
+}
+.rv-cx-ring-green { border-color: rgba(34,197,94,0.35);  color: #4ade80; }
+.rv-cx-ring-amber { border-color: rgba(251,191,36,0.35); color: #fbbf24; }
+.rv-cx-item {
+    display: flex; gap: 9px; align-items: flex-start;
     padding: 7px 0; border-bottom: 1px solid rgba(255,255,255,0.04);
     font-size: 12px; color: #52525b; line-height: 1.5;
 }
-.ra-missing-row:last-child { border-bottom: none; }
-.ra-missing-dot { width: 5px; height: 5px; border-radius: 50%; background: #fbbf24; flex-shrink: 0; margin-top: 6px; }
+.rv-cx-item:last-child { border-bottom: none; }
+.rv-cx-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
 
-/* ── Diff section ── */
-.ra-author-row   { }
-.ra-diff-mobile  { display: none; }
-.ra-diff-desktop { display: block; }
-.ra-diff-card {
+/* Diff link */
+.rv-diff-card {
     background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.07);
     border-radius: 14px; padding: 18px 20px; margin-bottom: 24px;
 }
-.ra-diff-card-title {
-    font-size: 13px; font-weight: 700; color: #a1a1aa; margin-bottom: 14px;
-    padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.06);
-}
-.ra-diff-link {
+.rv-diff-title { font-size: 13px; font-weight: 600; color: #a1a1aa; margin-bottom: 10px; }
+.rv-diff-link {
     display: inline-flex; align-items: center; gap: 6px;
     font-size: 12px; font-weight: 600; color: #a78bfa;
     text-decoration: none; padding: 8px 16px;
     border: 1px solid rgba(139,92,246,0.3); border-radius: 99px;
-    background: rgba(139,92,246,0.1);
-    transition: background 0.2s;
+    background: rgba(139,92,246,0.1); transition: background 0.2s;
 }
-.ra-diff-link:hover { background: rgba(139,92,246,0.18); }
-.ra-diff-mobile-btn {
+.rv-diff-link:hover { background: rgba(139,92,246,0.18); }
+.rv-diff-mobile-btn {
     display: flex; align-items: center; justify-content: center; gap: 8px;
     width: 100%; background: linear-gradient(135deg,#8b5cf6,#3b82f6);
     color: #fff; border: none; border-radius: 10px; padding: 13px 20px;
     font-size: 14px; font-weight: 600; cursor: pointer;
     margin-bottom: 24px; text-decoration: none;
 }
+.rv-diff-mobile  { display: none; }
+.rv-diff-desktop { display: block; }
 
-/* ── Footer ── */
-.ra-footer {
+/* Footer */
+.rv-footer {
     text-align: center; padding: 32px 0 8px;
     font-size: 11px; color: #27272a;
     border-top: 1px solid rgba(255,255,255,0.05); margin-top: 8px;
 }
-.ra-footer a { color: #52525b; text-decoration: none; }
-.ra-footer a:hover { color: #a78bfa; }
+.rv-footer a { color: #52525b; text-decoration: none; }
+.rv-footer a:hover { color: #a78bfa; }
 
-/* ── Streamlit overrides ── */
+/* ═══════════════════════════════════════
+   STREAMLIT OVERRIDES
+═══════════════════════════════════════ */
 .stButton > button {
     background: linear-gradient(135deg,#8b5cf6,#3b82f6) !important;
     color: #fff !important; border: none !important;
@@ -421,46 +511,40 @@ header[data-testid="stHeader"] { display: none; }
     border-radius: 12px !important;
 }
 
-/* ── Entrance animations ── */
+/* ═══════════════════════════════════════
+   ANIMATIONS
+═══════════════════════════════════════ */
 @keyframes fadeInUp {
     from { opacity: 0; transform: translateY(18px); }
     to   { opacity: 1; transform: translateY(0);    }
 }
 
-/* ── Mobile ── */
+/* ═══════════════════════════════════════
+   MOBILE
+═══════════════════════════════════════ */
 @media (max-width: 768px) {
-    .rv-nav  { padding: 0 16px; }
-    .rv-h1   { font-size: 34px; }
-    .rv-sub  { font-size: 15px; margin-bottom: 24px; }
-    .rv-hero { padding: 56px 16px 12px; }
-
-    .ra-score-grid  { grid-template-columns: repeat(3,1fr); }
-    .ra-score-num   { font-size: 22px; }
-    .ra-cols        { grid-template-columns: 1fr; gap: 10px; }
-    .ra-col-card    { padding: 14px; }
-    .ra-col-head    { margin-bottom: 10px; }
-    .ra-col-title   { font-size: 12px; }
-    .ra-finding     { padding: 8px 10px; margin-bottom: 6px; overflow: hidden; }
-    .ra-f-title     { font-size: 11px; }
-    .ra-f-desc      { font-size: 10px; }
-    .ra-sugg-t      { font-size: 11px; }
-    .ra-detail-grid { grid-template-columns: 1fr; }
-    .ra-rec-card    { padding: 14px 16px; }
-    .ra-progress-card { padding: 16px; }
-
-    .ra-author-row   { display: none !important; }
-    .ra-diff-mobile  { display: block; }
-    .ra-diff-desktop { display: none; }
+    .rv-nav   { padding: 0 16px; }
+    .rv-h1    { font-size: 34px; }
+    .rv-sub   { font-size: 15px; margin-bottom: 24px; }
+    .rv-hero  { padding: 56px 16px 12px; }
+    .rv-stat-strip { flex-wrap: wrap; }
+    .rv-stat  { min-width: 50%; border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .rv-quality-body  { flex-direction: column; align-items: center; }
+    .rv-complexity-grid { grid-template-columns: 1fr; }
+    .rv-repo-chips { display: none; }
+    .rv-diff-mobile  { display: block; }
+    .rv-diff-desktop { display: none; }
 
     [data-testid="stHorizontalBlock"] { flex-wrap: wrap !important; gap: 8px !important; }
     [data-testid="stHorizontalBlock"] > [data-testid="stColumn"] { min-width: 0 !important; flex: 1 1 auto !important; }
     [data-testid="stHorizontalBlock"] > [data-testid="stColumn"]:first-child,
     [data-testid="stHorizontalBlock"] > [data-testid="stColumn"]:last-child { display: none !important; }
-    .stButton > button { font-size: 13px !important; padding: 10px 14px !important; height: 48px !important; }
+    .stButton > button { font-size: 13px !important; height: 48px !important; }
 }
 </style>
 """, unsafe_allow_html=True)
 
+# ─────────────────────────────────────────────────────────────────────────────
 WS_URL = os.getenv("API_WS_URL", "ws://localhost:8000/review/stream")
 
 AGENTS = [
@@ -472,6 +556,7 @@ AGENTS = [
     ("synthesis",     "📋", "Final synthesis"),
 ]
 
+# ─────────────────────────────────────────────────────────────────────────────
 def run_websocket(pr_url, event_queue):
     async def _connect():
         try:
@@ -486,11 +571,33 @@ def run_websocket(pr_url, event_queue):
             event_queue.put({"type": "error", "message": str(e)})
     asyncio.run(_connect())
 
-def score_color(score):
-    if score >= 80: return "c-green"
-    if score >= 60: return "c-amber"
-    return "c-red"
+def score_color_class(score):
+    if score >= 80: return "c-green",  "#22c55e", "rv-bar-green"
+    if score >= 60: return "c-amber",  "#fbbf24", "rv-bar-amber"
+    return           "c-red",   "#f87171", "rv-bar-red"
 
+def get_risk(score, sec_cnt, log_cnt):
+    if sec_cnt >= 3 or score < 50:
+        return ("CRITICAL", "rv-risk-critical", "🔴", "#f87171",
+                "Critical risk — multiple security issues require immediate attention before merging.")
+    if sec_cnt > 0 or score < 65:
+        return ("HIGH", "rv-risk-high", "🟠", "#fb923c",
+                "High risk — security issues found. Review carefully before merging.")
+    if log_cnt > 2 or score < 80:
+        return ("MEDIUM", "rv-risk-medium", "🔵", "#60a5fa",
+                "Medium risk — some logic issues to address. Consider requesting changes.")
+    return ("LOW", "rv-risk-low", "🟢", "#4ade80",
+            "Low risk — minor issues only. This PR looks good to merge.")
+
+def sev_bar_class(sev):
+    return {"critical":"rv-bar-critical","high":"rv-bar-high",
+            "medium":"rv-bar-medium","low":"rv-bar-low"}.get(sev,"rv-bar-low")
+
+def sev_badge_class(sev):
+    return {"critical":"rv-sev-critical","high":"rv-sev-high",
+            "medium":"rv-sev-medium","low":"rv-sev-low"}.get(sev,"rv-sev-low")
+
+# ─────────────────────────────────────────────────────────────────────────────
 def agent_html(agent_id, emoji, label, state, detail=""):
     dot_cls   = {"wait":"ra-dot-wait","run":"ra-dot-run","done":"ra-dot-done","err":"ra-dot-err"}.get(state,"ra-dot-wait")
     icon_cls  = {"wait":"ra-icon-wait","run":"ra-icon-run","done":"ra-icon-done","err":"ra-icon-err"}.get(state,"ra-icon-wait")
@@ -508,131 +615,303 @@ def agent_html(agent_id, emoji, label, state, detail=""):
       <span class="ra-badge {badge_cls}">{badge_lbl}</span>
     </div>"""
 
-def rec_html(rec):
-    cfg = {
-        "APPROVE":          ("ra-rec-approve","✅","rgba(34,197,94,0.1)",  "ra-rec-title-approve","ra-rec-desc-approve",
-                             "Looks good to merge",
-                             "No significant issues were found. This PR is ready to merge."),
-        "REQUEST_CHANGES":  ("ra-rec-request","⚠️","rgba(239,68,68,0.1)",  "ra-rec-title-request","ra-rec-desc-request",
-                             "Changes requested before merge",
-                             "There are issues that should be addressed before this PR is merged."),
-        "NEEDS_DISCUSSION": ("ra-rec-discuss","💬","rgba(251,191,36,0.1)","ra-rec-title-discuss","ra-rec-desc-discuss",
-                             "Needs team discussion",
-                             "This PR has tradeoffs that the team should discuss before merging."),
-    }.get(rec, ("ra-rec-discuss","💬","rgba(251,191,36,0.1)","ra-rec-title-discuss","ra-rec-desc-discuss", rec, ""))
-    card_cls, icon, icon_bg, title_cls, desc_cls, title, desc = cfg
+# ─────────────────────────────────────────────────────────────────────────────
+def section_html(icon, icon_bg, icon_border, title, badge_html, body_html, open_by_default=True):
+    open_attr = "open" if open_by_default else ""
     return f"""
-    <div class="ra-rec-card {card_cls}">
-      <div class="ra-rec-icon" style="background:{icon_bg};">{icon}</div>
-      <div>
-        <div class="{title_cls}">{title}</div>
-        <div class="{desc_cls}">{desc}</div>
-      </div>
-    </div>"""
-
-def finding_html(findings, kind):
-    if not findings:
-        return f'<div class="ra-finding ra-f-ok"><div class="ra-f-sev ra-f-sev-ok">ALL CLEAR</div><div class="ra-f-title">No {kind} issues found</div></div>'
-    out = ""
-    for f in findings:
-        sev = f.get("severity", "low").lower()
-        out += f"""<div class="ra-finding ra-f-{sev}">
-          <div class="ra-f-sev ra-f-sev-{sev}">{sev.upper()}</div>
-          <div class="ra-f-title">{f.get('title','')}</div>
-          <div class="ra-f-file">{f.get('file','')}</div>
-          <div class="ra-f-desc">{f.get('description','')[:160]}</div>
-        </div>"""
-    return out
-
-def author_card_html(final_data):
-    author     = final_data.get('pr_author', '')
-    repo       = final_data.get('repo', '')
-    pr_title   = final_data.get('pr_title', '')
-    pr_num     = final_data.get('pr_number', '')
-    additions  = final_data.get('additions', 0)
-    deletions  = final_data.get('deletions', 0)
-    avatar_url = f"https://avatars.githubusercontent.com/{author}?s=88"
-    gh_pr_url  = f"https://github.com/{repo}/pull/{pr_num}" if pr_num else "#"
-    gh_user_url= f"https://github.com/{author}"
-    initials   = "".join([w[0].upper() for w in author.replace("-"," ").split()[:2]]) if author else "?"
-
-    return f"""
-    <div style="background:rgba(255,255,255,0.02);backdrop-filter:blur(12px);
-                border:1px solid rgba(255,255,255,0.07);border-radius:16px;
-                padding:20px 22px;margin-bottom:18px;">
-
-      <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:14px;">
-        <span style="font-size:11px;font-weight:700;color:#a78bfa;
-                     background:rgba(139,92,246,0.12);padding:3px 9px;
-                     border-radius:6px;flex-shrink:0;margin-top:2px;
-                     border:1px solid rgba(139,92,246,0.25);">
-          #{pr_num}
-        </span>
-        <span style="font-size:15px;font-weight:700;color:#f4f4f5;
-                     line-height:1.4;letter-spacing:-0.01em;">
-          {pr_title}
-        </span>
-      </div>
-
-      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;">
-        <span style="font-size:11px;padding:3px 9px;border-radius:99px;
-                     background:rgba(139,92,246,0.1);color:#a78bfa;
-                     border:1px solid rgba(139,92,246,0.2);">
-          {repo}
-        </span>
-        <span style="font-size:11px;padding:3px 9px;border-radius:99px;
-                     background:rgba(255,255,255,0.04);color:#71717a;
-                     border:1px solid rgba(255,255,255,0.07);">
-          +{additions} / −{deletions} lines
-        </span>
-      </div>
-
-      <div style="height:1px;background:rgba(255,255,255,0.06);margin-bottom:14px;"></div>
-
-      <div class="ra-author-row" style="display:flex;align-items:center;gap:12px;">
-        <div style="position:relative;flex-shrink:0;">
-          <img src="{avatar_url}" width="36" height="36"
-               style="border-radius:50%;border:2px solid rgba(255,255,255,0.1);
-                      object-fit:cover;display:block;"
-               onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
-          <div style="display:none;width:36px;height:36px;border-radius:50%;
-                      background:rgba(139,92,246,0.2);color:#a78bfa;font-size:12px;font-weight:700;
-                      align-items:center;justify-content:center;">
-            {initials}
+    <div class="rv-section">
+      <details {open_attr}>
+        <summary>
+          <div class="rv-sh-left">
+            <span class="rv-sh-icon" style="background:{icon_bg};border-color:{icon_border};">{icon}</span>
+            <span class="rv-sh-title">{title}</span>
+            {badge_html}
           </div>
+          <span class="rv-sh-chevron">›</span>
+        </summary>
+        <div class="rv-sb">{body_html}</div>
+      </details>
+    </div>"""
+
+# ─────────────────────────────────────────────────────────────────────────────
+def repo_overview_html(final_data, pr_url):
+    author    = final_data.get('pr_author', '')
+    repo      = final_data.get('repo', '')
+    pr_title  = final_data.get('pr_title', '')
+    pr_num    = final_data.get('pr_number', '')
+    additions = final_data.get('additions', 0)
+    deletions = final_data.get('deletions', 0)
+    est_t     = final_data.get('estimated_review_time_minutes', 0)
+    avatar_url= f"https://avatars.githubusercontent.com/{author}?s=88"
+    gh_pr_url = f"https://github.com/{repo}/pull/{pr_num}" if pr_num else "#"
+    gh_user   = f"https://github.com/{author}"
+    initials  = "".join([w[0].upper() for w in author.replace("-"," ").split()[:2]]) if author else "?"
+
+    m = _re.search(r'/pull/(\d+)', pr_url)
+    parsed_num = m.group(1) if m else pr_num
+
+    body = f"""
+    <div class="rv-repo-header">
+      <div class="rv-repo-avatar">
+        <img src="{avatar_url}" width="40" height="40"
+             style="border-radius:50%;border:2px solid rgba(255,255,255,0.1);object-fit:cover;display:block;"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
+        <div style="display:none;width:40px;height:40px;border-radius:50%;
+                    background:rgba(139,92,246,0.2);color:#a78bfa;font-size:13px;font-weight:700;
+                    align-items:center;justify-content:center;">{initials}</div>
+      </div>
+      <div>
+        <div class="rv-repo-name">{pr_title}</div>
+        <div class="rv-repo-sub">
+          <a href="{gh_user}" target="_blank" style="color:#52525b;text-decoration:none;">{author}</a>
+          &nbsp;·&nbsp; {repo}
         </div>
-        <div style="flex:1;min-width:0;">
-          <div style="font-size:13px;font-weight:600;color:#e4e4e7;margin-bottom:2px;">{author}</div>
-          <div style="font-size:11px;color:#52525b;font-family:monospace;">github.com/{author}</div>
-        </div>
-        <div style="display:flex;gap:8px;flex-shrink:0;">
-          <a href="{gh_user_url}" target="_blank"
-             style="font-size:11px;color:#a78bfa;text-decoration:none;
-                    display:inline-flex;align-items:center;gap:4px;
-                    padding:5px 12px;border:1px solid rgba(139,92,246,0.3);
-                    border-radius:99px;background:rgba(139,92,246,0.1);font-weight:600;">
-            View profile ↗
-          </a>
-          <a href="{gh_pr_url}" target="_blank"
-             style="font-size:11px;color:#fff;text-decoration:none;
-                    display:inline-flex;align-items:center;gap:4px;
-                    padding:5px 12px;border:none;border-radius:99px;
-                    background:linear-gradient(135deg,#8b5cf6,#3b82f6);font-weight:600;">
-            View PR ↗
-          </a>
-        </div>
+      </div>
+      <div class="rv-repo-chips">
+        <span class="rv-chip rv-chip-purple">#{parsed_num}</span>
+        <a href="{gh_pr_url}" target="_blank"
+           style="font-size:11px;color:#fff;text-decoration:none;
+                  padding:5px 12px;border-radius:99px;
+                  background:linear-gradient(135deg,#8b5cf6,#3b82f6);font-weight:600;">
+          View PR ↗
+        </a>
+      </div>
+    </div>
+    <div class="rv-stat-strip">
+      <div class="rv-stat"><span class="rv-stat-val rv-stat-add">+{additions}</span><span class="rv-stat-lbl">Additions</span></div>
+      <div class="rv-stat"><span class="rv-stat-val rv-stat-del">−{deletions}</span><span class="rv-stat-lbl">Deletions</span></div>
+      <div class="rv-stat"><span class="rv-stat-val" style="color:#a78bfa;">{est_t}m</span><span class="rv-stat-lbl">Est. Review</span></div>
+      <div class="rv-stat">
+        <a href="{gh_user}" target="_blank"
+           style="font-size:11px;color:#a78bfa;text-decoration:none;font-weight:600;">
+          @{author} ↗
+        </a>
+        <span class="rv-stat-lbl" style="margin-top:4px;">Author</span>
       </div>
     </div>"""
 
+    badge = f'<span class="rv-chip rv-chip-zinc" style="font-size:10px;">{repo}</span>'
+    return section_html("📁", "rgba(139,92,246,0.12)", "rgba(139,92,246,0.25)",
+                        "Repository Overview", badge, body, open_by_default=True)
 
+# ─────────────────────────────────────────────────────────────────────────────
+def quality_score_html(score, test_sc, doc_sc, sec_cnt, log_cnt, est_t):
+    circ = 326.73
+    filled = (score / 100) * circ
+    sc_cls, sc_color, _ = score_color_class(score)
+    tc_cls, tc_color, tc_bar = score_color_class(test_sc)
+    dc_cls, dc_color, dc_bar = score_color_class(doc_sc)
+    sec_bar = "rv-bar-green" if sec_cnt == 0 else "rv-bar-red"
+    log_bar = "rv-bar-green" if log_cnt == 0 else "rv-bar-amber"
+    sec_pct = 100 if sec_cnt == 0 else max(0, 100 - sec_cnt * 20)
+    log_pct = 100 if log_cnt == 0 else max(0, 100 - log_cnt * 15)
+
+    ring_svg = f"""
+    <svg width="130" height="130" viewBox="0 0 130 130">
+      <defs>
+        <linearGradient id="rgrad" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#8b5cf6"/>
+          <stop offset="100%" stop-color="#3b82f6"/>
+        </linearGradient>
+      </defs>
+      <circle cx="65" cy="65" r="52" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="9"/>
+      <circle cx="65" cy="65" r="52" fill="none" stroke="url(#rgrad)" stroke-width="9"
+              stroke-dasharray="{filled:.1f} {circ:.1f}"
+              stroke-linecap="round" transform="rotate(-90 65 65)"/>
+      <text x="65" y="58" text-anchor="middle" font-size="28" font-weight="900"
+            fill="{sc_color}" font-family="Inter,sans-serif">{score}</text>
+      <text x="65" y="76" text-anchor="middle" font-size="11" fill="#52525b"
+            font-family="Inter,sans-serif" font-weight="600">out of 100</text>
+    </svg>"""
+
+    def metric(label, val, bar_cls, pct):
+        return f"""
+        <div class="rv-metric-row">
+          <span class="rv-metric-lbl">{label}</span>
+          <div class="rv-metric-bar-bg"><div class="rv-metric-bar {bar_cls}" style="width:{pct}%;"></div></div>
+          <span class="rv-metric-val" style="color:{score_color_class(val)[1] if pct > 10 else '#f87171'};">{val}</span>
+        </div>"""
+
+    body = f"""
+    <div class="rv-quality-body">
+      <div class="rv-ring-wrap">{ring_svg}</div>
+      <div class="rv-metrics-list">
+        {metric("Overall", score, _, score)}
+        {metric("Tests", test_sc, tc_bar, test_sc)}
+        {metric("Docs", doc_sc, dc_bar, doc_sc)}
+        {metric("Security", f"{'✓' if sec_cnt==0 else sec_cnt+' issues'}", sec_bar, sec_pct)}
+        {metric("Logic", f"{'✓' if log_cnt==0 else str(log_cnt)+' issues'}", log_bar, log_pct)}
+        {metric("Est. Review", f"{est_t}m", "rv-bar-purple", min(100, est_t * 8))}
+      </div>
+    </div>"""
+
+    sc_label = "Excellent" if score >= 85 else "Good" if score >= 70 else "Fair" if score >= 55 else "Poor"
+    badge = f'<span class="rv-sev rv-sev-{"ok" if score>=80 else "warn" if score>=60 else "critical"}">{sc_label}</span>'
+    return section_html("📊", "rgba(59,130,246,0.12)", "rgba(59,130,246,0.25)",
+                        "Code Quality Score", badge, body, open_by_default=True)
+
+# ─────────────────────────────────────────────────────────────────────────────
+def risk_analysis_html(rec, score, sec_cnt, log_cnt):
+    risk_lbl, risk_cls, risk_icon, risk_color, risk_desc = get_risk(score, sec_cnt, log_cnt)
+
+    rec_cfg = {
+        "APPROVE":          ("✅", "#4ade80",  "Approved — looks good to merge",
+                             "No blocking issues found. Ready to merge."),
+        "REQUEST_CHANGES":  ("⚠️", "#f87171",  "Changes requested before merge",
+                             "Issues were found that should be resolved first."),
+        "NEEDS_DISCUSSION": ("💬", "#fbbf24", "Needs team discussion",
+                             "Tradeoffs exist that the team should align on."),
+    }.get(rec, ("💬", "#fbbf24", rec, ""))
+    rec_icon, rec_color, rec_title, rec_sub = rec_cfg
+
+    body = f"""
+    <div class="rv-risk-band {risk_cls}">
+      <span class="rv-risk-icon">{risk_icon}</span>
+      <div>
+        <div class="rv-risk-label" style="color:{risk_color};">{risk_lbl} RISK</div>
+        <div class="rv-risk-desc" style="color:{risk_color};">{risk_desc}</div>
+      </div>
+    </div>
+    <div class="rv-rec-row">
+      <span class="rv-rec-icon">{rec_icon}</span>
+      <div>
+        <div class="rv-rec-title" style="color:{rec_color};">{rec_title}</div>
+        <div class="rv-rec-sub" style="color:{rec_color};">{rec_sub}</div>
+      </div>
+    </div>"""
+
+    badge = f'<span class="rv-sev rv-sev-{"critical" if risk_lbl=="CRITICAL" else "warn" if risk_lbl in ("HIGH","MEDIUM") else "ok"}">{risk_lbl}</span>'
+    return section_html("⚡", "rgba(234,179,8,0.12)", "rgba(234,179,8,0.25)",
+                        "Risk Analysis", badge, body, open_by_default=True)
+
+# ─────────────────────────────────────────────────────────────────────────────
+def pr_summary_html(summary):
+    if not summary:
+        summary = "No summary available."
+    body = f"""
+    <div class="rv-ai-label">✦ AI Generated</div>
+    <div class="rv-summary-text">{summary}</div>"""
+    return section_html("💬", "rgba(139,92,246,0.12)", "rgba(139,92,246,0.25)",
+                        "Pull Request Summary", "", body, open_by_default=True)
+
+# ─────────────────────────────────────────────────────────────────────────────
+def security_section_html(findings):
+    count = len(findings)
+    if not findings:
+        body = '<div class="rv-allclear">✅&nbsp; No security issues found — this PR passes the security audit.</div>'
+    else:
+        items = ""
+        for f in findings:
+            sev = f.get("severity", "low").lower()
+            items += f"""
+            <div class="rv-finding">
+              <div class="rv-finding-bar {sev_bar_class(sev)}"></div>
+              <div class="rv-finding-body">
+                <div class="rv-finding-top">
+                  <span class="rv-sev {sev_badge_class(sev)}">{sev}</span>
+                  <span class="rv-finding-title">{f.get('title','')}</span>
+                </div>
+                <div class="rv-finding-file">{f.get('file','')}</div>
+                <div class="rv-finding-desc">{f.get('description','')[:200]}</div>
+              </div>
+            </div>"""
+        body = items
+
+    badge = (
+        '<span class="rv-sev rv-sev-ok">Clear</span>' if count == 0 else
+        f'<span class="rv-sev rv-sev-critical">{count} found</span>'
+    )
+    return section_html("🔒", "rgba(239,68,68,0.1)", "rgba(239,68,68,0.22)",
+                        "Security Findings", badge, body, open_by_default=True)
+
+# ─────────────────────────────────────────────────────────────────────────────
+def logic_section_html(findings):
+    count = len(findings)
+    if not findings:
+        body = '<div class="rv-allclear">✅&nbsp; No logic issues flagged — code logic looks sound.</div>'
+    else:
+        items = ""
+        for f in findings:
+            sev = f.get("severity", "medium").lower()
+            items += f"""
+            <div class="rv-finding">
+              <div class="rv-finding-bar {sev_bar_class(sev)}"></div>
+              <div class="rv-finding-body">
+                <div class="rv-finding-top">
+                  <span class="rv-sev {sev_badge_class(sev)}">{sev}</span>
+                  <span class="rv-finding-title">{f.get('title','')}</span>
+                </div>
+                <div class="rv-finding-file">{f.get('file','')}</div>
+                <div class="rv-finding-desc">{f.get('description','')[:200]}</div>
+              </div>
+            </div>"""
+        body = items
+
+    badge = (
+        "" if count == 0 else
+        f'<span class="rv-sev rv-sev-warn">{count} issues</span>'
+    )
+    return section_html("🧠", "rgba(59,130,246,0.1)", "rgba(59,130,246,0.22)",
+                        "AI Reviewer Comments", badge, body, open_by_default=count > 0)
+
+# ─────────────────────────────────────────────────────────────────────────────
+def suggestions_section_html(suggestions):
+    if not suggestions:
+        body = '<div class="rv-allclear">✅&nbsp; No specific fixes to suggest.</div>'
+    else:
+        items = "".join([
+            f'<div class="rv-fix"><div class="rv-fix-num">{i}</div><div class="rv-fix-text">{s}</div></div>'
+            for i, s in enumerate(suggestions, 1)
+        ])
+        body = items
+    badge = f'<span class="rv-sev rv-sev-info">{len(suggestions)} suggestions</span>' if suggestions else ""
+    return section_html("💡", "rgba(139,92,246,0.1)", "rgba(139,92,246,0.22)",
+                        "Suggested Fixes", badge, body, open_by_default=True)
+
+# ─────────────────────────────────────────────────────────────────────────────
+def complexity_section_html(test_sc, doc_sc, missing_tests, missing_docs):
+    tc_ring = "rv-cx-ring-green" if test_sc >= 80 else "rv-cx-ring-amber"
+    dc_ring = "rv-cx-ring-green" if doc_sc  >= 80 else "rv-cx-ring-amber"
+
+    def items_html(items, dot_color):
+        if not items:
+            return f'<div class="rv-cx-item"><div class="rv-cx-dot" style="background:#4ade80;"></div>Looks complete</div>'
+        return "".join([
+            f'<div class="rv-cx-item"><div class="rv-cx-dot" style="background:{dot_color};"></div><div>{m}</div></div>'
+            for m in items
+        ])
+
+    body = f"""
+    <div class="rv-complexity-grid">
+      <div class="rv-complexity-card">
+        <div class="rv-cx-head">
+          <span class="rv-cx-title">🧪 Test Coverage</span>
+          <div class="rv-cx-ring {tc_ring}">{test_sc}</div>
+        </div>
+        {items_html(missing_tests, "#fbbf24")}
+      </div>
+      <div class="rv-complexity-card">
+        <div class="rv-cx-head">
+          <span class="rv-cx-title">📝 Documentation</span>
+          <div class="rv-cx-ring {dc_ring}">{doc_sc}</div>
+        </div>
+        {items_html(missing_docs, "#fb923c")}
+      </div>
+    </div>"""
+
+    avg = (test_sc + doc_sc) // 2
+    badge = f'<span class="rv-sev rv-sev-{"ok" if avg>=80 else "warn" if avg>=60 else "critical"}">avg {avg}</span>'
+    return section_html("🔬", "rgba(34,197,94,0.1)", "rgba(34,197,94,0.22)",
+                        "Complexity Metrics", badge, body, open_by_default=True)
+
+# ─────────────────────────────────────────────────────────────────────────────
 def main():
-    # ── Animated background + Nav ─────────────────────────────────────────────
+    # ── Background + Nav ──────────────────────────────────────────────────────
     st.markdown("""
     <div class="rv-bg">
       <div class="rv-blob rv-blob-1"></div>
       <div class="rv-blob rv-blob-2"></div>
       <div class="rv-blob rv-blob-3"></div>
-      <!-- Particles -->
       <div class="rv-particle" style="left:7%;  width:2px;height:2px;animation-duration:20s;animation-delay:0s;"></div>
       <div class="rv-particle" style="left:14%; width:1px;height:1px;animation-duration:26s;animation-delay:-8s;"></div>
       <div class="rv-particle" style="left:22%; width:2px;height:2px;animation-duration:18s;animation-delay:-3s;"></div>
@@ -642,7 +921,6 @@ def main():
       <div class="rv-particle" style="left:74%; width:2px;height:2px;animation-duration:19s;animation-delay:-9s;"></div>
       <div class="rv-particle" style="left:82%; width:1px;height:1px;animation-duration:28s;animation-delay:-14s;"></div>
       <div class="rv-particle" style="left:91%; width:2px;height:2px;animation-duration:21s;animation-delay:-4s;"></div>
-      <!-- Floating code lines -->
       <div class="rv-code-line" style="left:4%;  animation-duration:32s;animation-delay:0s;">const review = await revora.analyze(pr);</div>
       <div class="rv-code-line" style="left:24%; animation-duration:38s;animation-delay:-12s;">if (security.critical.length > 0) reject(pr);</div>
       <div class="rv-code-line" style="left:55%; animation-duration:28s;animation-delay:-6s;">score: 94/100 — approved ✓</div>
@@ -653,7 +931,7 @@ def main():
 
     <nav class="rv-nav">
       <div class="rv-nav-logo">
-        <svg width="26" height="26" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg width="26" height="26" viewBox="0 0 28 28" fill="none">
           <defs>
             <linearGradient id="navgl" x1="0" y1="0" x2="28" y2="28" gradientUnits="userSpaceOnUse">
               <stop offset="0%" stop-color="#c4b5fd"/>
@@ -678,7 +956,7 @@ def main():
     </nav>
     """, unsafe_allow_html=True)
 
-    # ── Hero text ─────────────────────────────────────────────────────────────
+    # ── Hero ──────────────────────────────────────────────────────────────────
     st.markdown("""
     <div class="rv-hero">
       <div class="rv-eyebrow">⚡ Powered by GPT-4o &nbsp;·&nbsp; LangGraph</div>
@@ -690,7 +968,7 @@ def main():
     </div>
     """, unsafe_allow_html=True)
 
-    # ── Input + button ────────────────────────────────────────────────────────
+    # ── Input ─────────────────────────────────────────────────────────────────
     st.markdown('<div class="rv-input-row">', unsafe_allow_html=True)
     _, col_input, col_btn, _ = st.columns([2, 3.5, 0.8, 2])
     with col_input:
@@ -703,7 +981,6 @@ def main():
         analyze = st.button("Analyze →", use_container_width=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
-    # ── Demo link + trust strip ───────────────────────────────────────────────
     st.markdown("""
     <div class="rv-demo-row">
       <a href="https://github.com/fastapi/fastapi/pull/13474" target="_blank" class="rv-btn-demo">
@@ -721,7 +998,6 @@ def main():
 
     # ── How it works ──────────────────────────────────────────────────────────
     st.markdown('<div class="rv-wrap">', unsafe_allow_html=True)
-
     st.markdown("""
     <div class="rv-how-grid">
       <div class="rv-how-card">
@@ -735,7 +1011,7 @@ def main():
         <div class="rv-how-num">2</div>
         <div>
           <div class="rv-how-title">Five agents review it live</div>
-          <div class="rv-how-desc">Security, logic, tests, docs, and synthesis all run and stream back in real time.</div>
+          <div class="rv-how-desc">Security, logic, tests, docs, and synthesis all stream back in real time.</div>
         </div>
       </div>
       <div class="rv-how-card">
@@ -757,21 +1033,21 @@ def main():
         st.markdown('</div>', unsafe_allow_html=True)
         return
 
+    # ── Agent progress ────────────────────────────────────────────────────────
     st.markdown("""
-    <div class="ra-divider">
-      <div class="ra-divider-line"></div>
-      <span class="ra-divider-label">Live agent progress</span>
-      <div class="ra-divider-line"></div>
+    <div class="rv-divider">
+      <div class="rv-divider-line"></div>
+      <span class="rv-divider-label">Live agent progress</span>
+      <div class="rv-divider-line"></div>
     </div>
     """, unsafe_allow_html=True)
 
     progress_slot = st.empty()
     status_slot   = st.empty()
-
-    agent_states = {a[0]: ("wait", "") for a in AGENTS}
-    done_count   = 0
-    total        = len(AGENTS)
-    final_data   = None
+    agent_states  = {a[0]: ("wait", "") for a in AGENTS}
+    done_count    = 0
+    total         = len(AGENTS)
+    final_data    = None
 
     def render_progress(states):
         rows = ""
@@ -786,9 +1062,7 @@ def main():
             <span class="ra-progress-title">Analyzing PR</span>
             <span class="ra-progress-count">{completed} of {total} agents complete</span>
           </div>
-          <div class="ra-pbar-bg">
-            <div class="ra-pbar-fill" style="width:{pct}%;"></div>
-          </div>
+          <div class="ra-pbar-bg"><div class="ra-pbar-fill" style="width:{pct}%;"></div></div>
           {rows}
         </div>
         """, unsafe_allow_html=True)
@@ -848,184 +1122,72 @@ def main():
         st.markdown('</div>', unsafe_allow_html=True)
         return
 
+    # ── Dashboard ─────────────────────────────────────────────────────────────
     st.markdown("""
-    <div class="ra-divider">
-      <div class="ra-divider-line"></div>
-      <span class="ra-divider-label">Review report</span>
-      <div class="ra-divider-line"></div>
+    <div class="rv-divider">
+      <div class="rv-divider-line"></div>
+      <span class="rv-divider-label">Review dashboard</span>
+      <div class="rv-divider-line"></div>
     </div>
     """, unsafe_allow_html=True)
 
-    st.markdown(author_card_html(final_data), unsafe_allow_html=True)
-
-    score   = final_data.get("overall_score", 0)
-    rec     = final_data.get("recommendation", "")
-    test_sc = final_data.get("test_coverage_score", 0)
-    doc_sc  = final_data.get("documentation_score", 0)
-    est_t   = final_data.get("estimated_review_time_minutes", 0)
-    sec_cnt = len(final_data.get("security_findings", []))
-    log_cnt = len(final_data.get("logic_findings", []))
-
-    sc    = score_color(score)
-    tc    = score_color(test_sc)
-    dc    = score_color(doc_sc)
-    sec_c = "c-green" if sec_cnt == 0 else "c-red"
-    log_c = "c-green" if log_cnt == 0 else "c-amber"
-
-    st.markdown(f"""
-    <div class="ra-score-grid">
-      <div class="ra-score-card">
-        <div class="ra-score-num {sc}">{score}</div>
-        <div class="ra-score-lbl">Overall</div>
-      </div>
-      <div class="ra-score-card">
-        <div class="ra-score-num {tc}">{test_sc}</div>
-        <div class="ra-score-lbl">Tests</div>
-      </div>
-      <div class="ra-score-card">
-        <div class="ra-score-num {dc}">{doc_sc}</div>
-        <div class="ra-score-lbl">Docs</div>
-      </div>
-      <div class="ra-score-card">
-        <div class="ra-score-num {sec_c}"
-             style="font-size:{'16px' if sec_cnt==0 else '28px'};
-                    {'padding-top:6px;' if sec_cnt==0 else ''}">
-          {'None' if sec_cnt == 0 else sec_cnt}
-        </div>
-        <div class="ra-score-lbl">Security</div>
-      </div>
-      <div class="ra-score-card">
-        <div class="ra-score-num {log_c}">{log_cnt}</div>
-        <div class="ra-score-lbl">Logic</div>
-      </div>
-      <div class="ra-score-card">
-        <div class="ra-score-num c-purple">{est_t}m</div>
-        <div class="ra-score-lbl">Est. review</div>
-      </div>
-    </div>
-    """, unsafe_allow_html=True)
-
-    st.markdown(rec_html(rec), unsafe_allow_html=True)
-
-    summary = final_data.get("summary", "")
-    if summary:
-        st.markdown(
-            f'<div class="ra-summary">'
-            f'<span style="font-size:18px;flex-shrink:0;">💬</span>'
-            f'<span>{summary}</span></div>',
-            unsafe_allow_html=True
-        )
-
+    score    = final_data.get("overall_score", 0)
+    rec      = final_data.get("recommendation", "")
+    test_sc  = final_data.get("test_coverage_score", 0)
+    doc_sc   = final_data.get("documentation_score", 0)
+    est_t    = final_data.get("estimated_review_time_minutes", 0)
     sec_findings = final_data.get("security_findings", [])
     log_findings = final_data.get("logic_findings", [])
     suggestions  = final_data.get("top_suggestions", [])
+    summary      = final_data.get("summary", "")
+    missing_tests= final_data.get("missing_test_cases", [])
+    missing_docs = final_data.get("missing_docstrings", []) + final_data.get("missing_type_hints", [])
+    sec_cnt = len(sec_findings)
+    log_cnt = len(log_findings)
 
-    sugg_html = "".join([
-        f'<div class="ra-sugg-item">'
-        f'<div class="ra-sugg-n">{i}</div>'
-        f'<div class="ra-sugg-t">{s}</div></div>'
-        for i, s in enumerate(suggestions, 1)
-    ]) or "<p style='font-size:12px;color:#3f3f46;'>No suggestions.</p>"
+    # 1. Repository Overview
+    st.markdown(repo_overview_html(final_data, pr_url), unsafe_allow_html=True)
 
-    sec_badge = (
-        '<span class="ra-badge ra-badge-done" style="margin-left:6px;">Clear</span>'
-        if not sec_findings else
-        f'<span class="ra-badge" style="background:rgba(239,68,68,0.12);color:#f87171;'
-        f'margin-left:6px;">{len(sec_findings)} found</span>'
-    )
-    log_badge = (
-        "" if not log_findings else
-        f'<span class="ra-badge" style="background:rgba(251,191,36,0.12);color:#fbbf24;'
-        f'margin-left:6px;">{len(log_findings)} found</span>'
-    )
+    # 2 & 3. Quality Score + Risk side by side on desktop
+    col_q, col_r = st.columns([3, 2])
+    with col_q:
+        st.markdown(quality_score_html(score, test_sc, doc_sc, sec_cnt, log_cnt, est_t), unsafe_allow_html=True)
+    with col_r:
+        st.markdown(risk_analysis_html(rec, score, sec_cnt, log_cnt), unsafe_allow_html=True)
 
-    st.markdown(f"""
-    <div class="ra-cols">
-      <div class="ra-col-card">
-        <div class="ra-col-head">
-          <div class="ra-col-title">Security {sec_badge}</div>
-        </div>
-        {finding_html(sec_findings, "security")}
-      </div>
-      <div class="ra-col-card">
-        <div class="ra-col-head">
-          <div class="ra-col-title">Logic issues {log_badge}</div>
-        </div>
-        {finding_html(log_findings, "logic")}
-      </div>
-      <div class="ra-col-card">
-        <div class="ra-col-head">
-          <div class="ra-col-title">What to fix first</div>
-        </div>
-        {sugg_html}
-      </div>
-    </div>
-    """, unsafe_allow_html=True)
+    # 4. PR Summary
+    st.markdown(pr_summary_html(summary), unsafe_allow_html=True)
 
-    import re as _re
-    _m = _re.search(r'/pull/(\d+)', pr_url)
-    _pr_num   = _m.group(1) if _m else ''
-    _repo     = final_data.get('repo', '')
-    _diff_url = f"https://github.com/{_repo}/pull/{_pr_num}/files" if _pr_num else f"https://github.com/{_repo}"
+    # 5. Security Findings
+    st.markdown(security_section_html(sec_findings), unsafe_allow_html=True)
+
+    # 6. AI Reviewer Comments (Logic)
+    st.markdown(logic_section_html(log_findings), unsafe_allow_html=True)
+
+    # 7. Suggested Fixes
+    st.markdown(suggestions_section_html(suggestions), unsafe_allow_html=True)
+
+    # 8. Complexity Metrics
+    st.markdown(complexity_section_html(test_sc, doc_sc, missing_tests, missing_docs), unsafe_allow_html=True)
+
+    # Diff link
+    m = _re.search(r'/pull/(\d+)', pr_url)
+    pr_num   = m.group(1) if m else ''
+    repo     = final_data.get('repo', '')
+    diff_url = f"https://github.com/{repo}/pull/{pr_num}/files" if pr_num else f"https://github.com/{repo}"
 
     st.markdown(f"""
-    <div class="ra-diff-desktop">
-      <div class="ra-diff-card">
-        <div class="ra-diff-card-title">Code Diff</div>
+    <div class="rv-diff-desktop">
+      <div class="rv-diff-card">
+        <div class="rv-diff-title">Code Diff</div>
         <p style="font-size:12px;color:#52525b;margin-bottom:14px;line-height:1.6;">
-          View the full file-by-file diff for this pull request on GitHub.
+          View the complete file-by-file diff for this pull request on GitHub.
         </p>
-        <a href="{_diff_url}" target="_blank" class="ra-diff-link">View diff on GitHub ↗</a>
+        <a href="{diff_url}" target="_blank" class="rv-diff-link">View diff on GitHub ↗</a>
       </div>
     </div>
-    <div class="ra-diff-mobile">
-      <a href="{_diff_url}" target="_blank" class="ra-diff-mobile-btn">GitHub Diff View ↗</a>
-    </div>
-    """, unsafe_allow_html=True)
-
-    missing_tests = "".join([
-        f'<div class="ra-missing-row">'
-        f'<div class="ra-missing-dot"></div><div>{m}</div></div>'
-        for m in final_data.get("missing_test_cases", [])
-    ]) or (
-        '<div class="ra-missing-row">'
-        '<div class="ra-missing-dot" style="background:#4ade80;"></div>'
-        '<div>No missing test cases identified</div></div>'
-    )
-
-    missing_docs = "".join([
-        f'<div class="ra-missing-row">'
-        f'<div class="ra-missing-dot" style="background:#fbbf24;"></div>'
-        f'<div>{m}</div></div>'
-        for m in (
-            final_data.get("missing_docstrings", []) +
-            final_data.get("missing_type_hints", [])
-        )
-    ]) or (
-        '<div class="ra-missing-row">'
-        '<div class="ra-missing-dot" style="background:#4ade80;"></div>'
-        '<div>Documentation looks complete</div></div>'
-    )
-
-    ring_tc = "ra-ring" if test_sc >= 80 else "ra-ring ra-ring-amber"
-    ring_dc = "ra-ring" if doc_sc  >= 80 else "ra-ring ra-ring-amber"
-
-    st.markdown(f"""
-    <div class="ra-detail-grid">
-      <div class="ra-detail-card">
-        <div class="ra-detail-head">
-          <div class="ra-detail-title">🧪 Test coverage</div>
-          <div class="{ring_tc}">{test_sc}</div>
-        </div>
-        {missing_tests}
-      </div>
-      <div class="ra-detail-card">
-        <div class="ra-detail-head">
-          <div class="ra-detail-title">📝 Documentation</div>
-          <div class="{ring_dc}">{doc_sc}</div>
-        </div>
-        {missing_docs}
-      </div>
+    <div class="rv-diff-mobile">
+      <a href="{diff_url}" target="_blank" class="rv-diff-mobile-btn">GitHub Diff View ↗</a>
     </div>
     """, unsafe_allow_html=True)
 
@@ -1036,14 +1198,14 @@ def main():
                 st.warning(e)
 
     st.markdown("""
-    <div class="ra-footer">
-      Built with LangGraph · GPT-4o · FastAPI · Streamlit
-      &nbsp;·&nbsp;
+    <div class="rv-footer">
+      Built with LangGraph · GPT-4o · FastAPI · Streamlit &nbsp;·&nbsp;
       <a href="https://github.com/Satwik-Pamulaparthy/pr-review-agent">View on GitHub</a>
     </div>
     """, unsafe_allow_html=True)
 
     st.markdown('</div>', unsafe_allow_html=True)
+
 
 if __name__ == "__main__":
     main()
