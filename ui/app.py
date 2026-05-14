@@ -864,13 +864,18 @@ def quality_score_html(score, test_sc, doc_sc, sec_cnt, log_cnt, est_t):
             font-family="Inter,sans-serif" font-weight="600">out of 100</text>
     </svg>"""
 
-    def metric(label, val, bar_cls, pct):
+    def metric(label, val, bar_cls, pct, numeric_pct=None):
+        color_pct = numeric_pct if numeric_pct is not None else pct
+        color = score_color_class(color_pct)[1] if color_pct > 10 else '#f87171'
         return f"""
         <div class="rv-metric-row">
           <span class="rv-metric-lbl">{label}</span>
           <div class="rv-metric-bar-bg"><div class="rv-metric-bar {bar_cls}" style="width:{pct}%;"></div></div>
-          <span class="rv-metric-val" style="color:{score_color_class(val)[1] if pct > 10 else '#f87171'};">{val}</span>
+          <span class="rv-metric-val" style="color:{color};">{val}</span>
         </div>"""
+
+    sec_label = "✓ None" if sec_cnt == 0 else f"{sec_cnt} issue{'s' if sec_cnt != 1 else ''}"
+    log_label = "✓ None" if log_cnt == 0 else f"{log_cnt} issue{'s' if log_cnt != 1 else ''}"
 
     body = f"""
     <div class="rv-quality-body">
@@ -879,9 +884,9 @@ def quality_score_html(score, test_sc, doc_sc, sec_cnt, log_cnt, est_t):
         {metric("Overall", score, _, score)}
         {metric("Tests", test_sc, tc_bar, test_sc)}
         {metric("Docs", doc_sc, dc_bar, doc_sc)}
-        {metric("Security", f"{'✓' if sec_cnt==0 else sec_cnt+' issues'}", sec_bar, sec_pct)}
-        {metric("Logic", f"{'✓' if log_cnt==0 else str(log_cnt)+' issues'}", log_bar, log_pct)}
-        {metric("Est. Review", f"{est_t}m", "rv-bar-purple", min(100, est_t * 8))}
+        {metric("Security", sec_label, sec_bar, sec_pct, sec_pct)}
+        {metric("Logic", log_label, log_bar, log_pct, log_pct)}
+        {metric("Est. Review", f"{est_t}m", "rv-bar-purple", min(100, est_t * 8), min(100, est_t * 8))}
       </div>
     </div>"""
 
