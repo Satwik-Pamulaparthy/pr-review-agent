@@ -633,12 +633,14 @@ p.rv-sub { text-align: center !important; margin-left: auto !important; margin-r
 .stTextInput > div > div > input {
     border-radius: 12px !important;
     border: 1px solid rgba(255,255,255,0.1) !important;
-    font-size: 15px !important; height: 52px !important;
-    padding: 0 20px !important;
+    font-size: 14px !important; height: 52px !important;
+    padding: 0 16px !important;
     background: rgba(255,255,255,0.92) !important;
     color: #000000 !important;
 }
-.stTextInput > div > div > input::placeholder { color: #3f3f46 !important; }
+.stTextInput > div { padding-bottom: 0 !important; }
+.stTextInput { margin-bottom: 0 !important; }
+.stTextInput > div > div > input::placeholder { color: #71717a !important; }
 .stTextInput > div > div > input:focus {
     border-color: rgba(139,92,246,0.6) !important;
     box-shadow: 0 0 0 3px rgba(139,92,246,0.12) !important;
@@ -661,6 +663,25 @@ p.rv-sub { text-align: center !important; margin-left: auto !important; margin-r
     from { opacity: 0; transform: translateY(18px); }
     to   { opacity: 1; transform: translateY(0);    }
 }
+
+/* ═══════════════════════════════════════
+   CONNECTING SPINNER
+═══════════════════════════════════════ */
+.rv-connecting {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 20px; border-radius: 12px;
+    background: rgba(139,92,246,0.08);
+    border: 1px solid rgba(139,92,246,0.2);
+    color: #a78bfa; font-size: 14px; font-weight: 500;
+    margin-bottom: 8px;
+}
+.rv-spinner {
+    width: 18px; height: 18px; border-radius: 50%; flex-shrink: 0;
+    border: 2px solid rgba(139,92,246,0.25);
+    border-top-color: #a78bfa;
+    animation: spin 0.75s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
 
 /* ═══════════════════════════════════════
    INFO TOOLTIP
@@ -1183,6 +1204,17 @@ def main():
         analyze = st.button("Analyze →", use_container_width=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
+    if analyze:
+        st.markdown("""
+        <div id="rv-progress-anchor"></div>
+        <script>
+          (function() {
+            var el = document.getElementById('rv-progress-anchor');
+            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          })();
+        </script>
+        """, unsafe_allow_html=True)
+
     st.markdown("""
     <div class="rv-stat-pills">
       <span class="rv-stat-pill"><span class="rv-stat-pill-icon">🔒</span>Security audit</span>
@@ -1374,7 +1406,12 @@ def main():
         """, unsafe_allow_html=True)
 
     render_progress(agent_states)
-    status_slot.info("🚀 Connecting to agent pipeline...")
+    status_slot.markdown("""
+    <div class="rv-connecting">
+      <div class="rv-spinner"></div>
+      Connecting to agent pipeline...
+    </div>
+    """, unsafe_allow_html=True)
 
     eq = queue.Queue()
     threading.Thread(target=run_websocket, args=(pr_url.strip(), eq), daemon=True).start()
