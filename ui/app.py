@@ -1034,17 +1034,55 @@ def complexity_section_html(test_sc, doc_sc, missing_tests, missing_docs):
         ])
 
     body = f"""
+    <style>
+    .rv-info-btn {{
+        display: inline-flex; align-items: center; justify-content: center;
+        width: 16px; height: 16px; border-radius: 50%;
+        background: rgba(139,92,246,0.15); border: 1px solid rgba(139,92,246,0.3);
+        color: #a78bfa; font-size: 10px; font-weight: 700;
+        cursor: default; flex-shrink: 0; line-height: 1;
+        position: relative;
+    }}
+    .rv-info-btn .rv-tooltip {{
+        display: none; position: absolute; bottom: calc(100% + 8px); left: 50%;
+        transform: translateX(-50%);
+        background: #18181b; border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 10px; padding: 10px 12px; width: 220px;
+        font-size: 11px; color: #a1a1aa; line-height: 1.6;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.5); z-index: 100;
+        pointer-events: none; text-align: left; font-weight: 400;
+    }}
+    .rv-info-btn:hover .rv-tooltip {{ display: block; }}
+    </style>
     <div class="rv-complexity-grid">
       <div class="rv-complexity-card">
         <div class="rv-cx-head">
-          <span class="rv-cx-title">🧪 Test Coverage</span>
+          <span class="rv-cx-title" style="display:flex;align-items:center;gap:6px;">
+            🧪 Test Coverage
+            <span class="rv-info-btn">i
+              <span class="rv-tooltip">
+                <strong style="color:#e4e4e7;">Test Coverage Score</strong><br>
+                Rates 0–100 how well the PR's new code is covered by tests.
+                Checks for missing unit tests, untested functions, and coverage gaps introduced by this PR.
+              </span>
+            </span>
+          </span>
           <div class="rv-cx-ring {tc_ring}">{test_sc}</div>
         </div>
         {items_html(missing_tests, "#fbbf24")}
       </div>
       <div class="rv-complexity-card">
         <div class="rv-cx-head">
-          <span class="rv-cx-title">📝 Documentation</span>
+          <span class="rv-cx-title" style="display:flex;align-items:center;gap:6px;">
+            📝 Documentation
+            <span class="rv-info-btn">i
+              <span class="rv-tooltip">
+                <strong style="color:#e4e4e7;">Documentation Score</strong><br>
+                Rates 0–100 how well the changed code is documented.
+                Checks for missing docstrings, type hints, and inline comments on complex logic.
+              </span>
+            </span>
+          </span>
           <div class="rv-cx-ring {dc_ring}">{doc_sc}</div>
         </div>
         {items_html(missing_docs, "#fb923c")}
@@ -1421,10 +1459,7 @@ def main():
     # 5. Security Findings
     st.markdown(security_section_html(sec_findings), unsafe_allow_html=True)
 
-    # 6. AI Reviewer Comments (Logic)
-    st.markdown(logic_section_html(log_findings), unsafe_allow_html=True)
-
-    # 7. Suggested Fixes
+    # 6. Suggested Fixes
     st.markdown(suggestions_section_html(suggestions), unsafe_allow_html=True)
 
     # 8. Complexity Metrics
