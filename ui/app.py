@@ -169,10 +169,18 @@ p.rv-sub { text-align: center !important; margin-left: auto !important; margin-r
 }
 .rv-stat-pill {
     display: inline-flex; align-items: center; gap: 6px;
-    font-size: 12px; font-weight: 500; color: #52525b;
+    font-size: 12px; font-weight: 500; color: #71717a;
     padding: 6px 14px; border-radius: 99px;
-    border: 1px solid rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.07);
     background: rgba(255,255,255,0.02);
+    cursor: default;
+    transition: color 0.2s, border-color 0.2s, background 0.2s, box-shadow 0.2s;
+}
+.rv-stat-pill:hover {
+    color: #c4b5fd;
+    border-color: rgba(139,92,246,0.4);
+    background: rgba(139,92,246,0.08);
+    box-shadow: 0 0 14px rgba(139,92,246,0.2);
 }
 .rv-stat-pill-icon { font-size: 13px; }
 .rv-stat-pill-sep  { width: 1px; height: 14px; background: rgba(255,255,255,0.07); margin: 0 4px; }
@@ -637,15 +645,14 @@ p.rv-sub { text-align: center !important; margin-left: auto !important; margin-r
 .stTextInput > div > div > input {
     height: 52px !important;
     border-radius: 10px !important;
-    border: 1.5px solid rgba(255,255,255,0.15) !important;
-    background: rgba(255,255,255,0.96) !important;
+    border: 1.5px solid rgba(139,92,246,0.35) !important;
+    background: #ffffff !important;
     color: #111827 !important;
     caret-color: #111827 !important;
     font-size: 14px !important;
     font-weight: 400 !important;
     padding: 0 16px !important;
-    letter-spacing: 0 !important;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.1) !important;
+    box-shadow: 0 0 0 0 transparent, 0 1px 3px rgba(0,0,0,0.08) !important;
     transition: border-color 0.2s, box-shadow 0.2s !important;
 }
 .stTextInput > div > div > input::placeholder {
@@ -653,8 +660,8 @@ p.rv-sub { text-align: center !important; margin-left: auto !important; margin-r
     font-weight: 400 !important;
 }
 .stTextInput > div > div > input:focus {
-    border-color: rgba(139,92,246,0.7) !important;
-    box-shadow: 0 0 0 3px rgba(139,92,246,0.15) !important;
+    border-color: #8b5cf6 !important;
+    box-shadow: 0 0 0 3px rgba(139,92,246,0.2) !important;
     outline: none !important;
 }
 [data-testid="stAlert"] {
