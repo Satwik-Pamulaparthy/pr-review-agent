@@ -781,16 +781,25 @@ def score_color_class(score):
 
 def get_risk(score, sec_cnt, log_cnt):
     if sec_cnt >= 3 or score < 50:
-        return ("CRITICAL", "rv-risk-critical", "🔴", "#f87171",
-                "Critical risk — multiple security issues require immediate attention before merging.")
+        if sec_cnt >= 3:
+            desc = "Critical risk — multiple security vulnerabilities require immediate attention before merging."
+        else:
+            desc = "Critical risk — overall quality score is too low. Significant issues must be addressed."
+        return ("CRITICAL", "rv-risk-critical", "🔴", "#f87171", desc)
     if sec_cnt > 0 or score < 65:
-        return ("HIGH", "rv-risk-high", "🟠", "#fb923c",
-                "High risk — security issues found. Review carefully before merging.")
+        if sec_cnt > 0:
+            desc = "High risk — security issues found. Review carefully before merging."
+        else:
+            desc = "High risk — overall score is below threshold. Logic or coverage issues need attention."
+        return ("HIGH", "rv-risk-high", "🟠", "#fb923c", desc)
     if log_cnt > 2 or score < 80:
-        return ("MEDIUM", "rv-risk-medium", "🔵", "#60a5fa",
-                "Medium risk — some logic issues to address. Consider requesting changes.")
+        if log_cnt > 2:
+            desc = "Medium risk — several logic issues to address. Consider requesting changes."
+        else:
+            desc = "Medium risk — quality score has room for improvement. Minor issues to review."
+        return ("MEDIUM", "rv-risk-medium", "🔵", "#60a5fa", desc)
     return ("LOW", "rv-risk-low", "🟢", "#4ade80",
-            "Low risk — minor issues only. This PR looks good to merge.")
+            "Low risk — no significant issues found. This PR looks good to merge.")
 
 def sev_bar_class(sev):
     return {"critical":"rv-bar-critical","high":"rv-bar-high",
