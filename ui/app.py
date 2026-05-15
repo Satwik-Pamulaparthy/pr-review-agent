@@ -148,11 +148,24 @@ header[data-testid="stHeader"] { display: none; }
 }
 .rv-h1 em { font-style: normal; color: #a78bfa; -webkit-text-fill-color: #a78bfa; }
 .rv-sub {
-    font-size: 18px; color: #71717a; max-width: 520px;
+    font-size: 18px; color: #ffffff; max-width: 560px;
     margin: 0 auto 36px; line-height: 1.7; font-weight: 400;
+    text-align: center;
     animation: fadeInUp 0.5s 0.16s ease both;
 }
 .rv-input-row { animation: fadeInUp 0.5s 0.24s ease both; }
+
+/* Match input height to button and force black typed text */
+.rv-input-row [data-testid="stTextInput"] input {
+    height: 42px !important;
+    line-height: 42px !important;
+    color: #000000 !important;
+    font-size: 14px !important;
+}
+.rv-input-row .stButton > button {
+    height: 42px !important;
+    line-height: 42px !important;
+}
 
 /* Stats pills row */
 .rv-stat-pills {
@@ -1109,7 +1122,7 @@ def main():
         <span class="rv-badge"><span class="rv-badge-dot"></span>&nbsp;API Live</span>
         <span class="rv-badge">Free &amp; Open Source</span>
       </div>
-      <h1 class="rv-h1">Great code doesn't<br>review <em>itself.</em></h1>
+      <h1 class="rv-h1">Great code doesn't review <em>itself.</em></h1>
       <p class="rv-sub">
         Paste a GitHub PR link. Five AI agents analyze security, logic,
         test coverage, and documentation — full report in seconds.
@@ -1131,11 +1144,6 @@ def main():
     st.markdown('</div>', unsafe_allow_html=True)
 
     st.markdown("""
-    <div class="rv-demo-row">
-      <a href="https://github.com/fastapi/fastapi/pull/13474" target="_blank" class="rv-btn-demo">
-        Try demo PR ↗
-      </a>
-    </div>
     <div class="rv-stat-pills">
       <span class="rv-stat-pill"><span class="rv-stat-pill-icon">🔒</span>Security audit</span>
       <span class="rv-stat-pill-sep"></span>
