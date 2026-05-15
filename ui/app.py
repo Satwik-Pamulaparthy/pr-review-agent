@@ -148,12 +148,12 @@ header[data-testid="stHeader"] { display: none; }
 }
 .rv-h1 em { font-style: normal; color: #a78bfa; -webkit-text-fill-color: #a78bfa; }
 .rv-sub {
-    font-size: 18px; color: #ffffff; max-width: 560px;
-    margin: 0 auto 36px; line-height: 1.7; font-weight: 400;
-    text-align: center; display: block; width: 100%;
+    font-size: 18px !important; color: #ffffff !important; max-width: 560px;
+    margin: 0 auto 36px !important; line-height: 1.7; font-weight: 400;
+    text-align: center !important; display: block; width: 100%;
     animation: fadeInUp 0.5s 0.16s ease both;
 }
-.rv-hero { text-align: center; }
+p.rv-sub { text-align: center !important; margin-left: auto !important; margin-right: auto !important; }
 .rv-input-row { animation: fadeInUp 0.5s 0.24s ease both; }
 
 /* Match input height to button */
@@ -1117,7 +1117,7 @@ def main():
         <span class="rv-badge">Free &amp; Open Source</span>
       </div>
       <h1 class="rv-h1">Great code doesn't review <em>itself.</em></h1>
-      <p class="rv-sub">
+      <p class="rv-sub" style="text-align:center;margin-left:auto;margin-right:auto;">
         Paste a GitHub PR link. Five AI agents analyze security, logic,
         test coverage, and documentation — full report in seconds.
       </p>
