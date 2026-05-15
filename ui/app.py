@@ -662,6 +662,28 @@ p.rv-sub { text-align: center !important; margin-left: auto !important; margin-r
 }
 
 /* ═══════════════════════════════════════
+   INFO TOOLTIP
+═══════════════════════════════════════ */
+.rv-info-btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 16px; height: 16px; border-radius: 50%;
+    background: rgba(139,92,246,0.15); border: 1px solid rgba(139,92,246,0.3);
+    color: #a78bfa; font-size: 10px; font-weight: 700;
+    cursor: default; flex-shrink: 0; line-height: 1;
+    position: relative; vertical-align: middle;
+}
+.rv-info-btn .rv-tooltip {
+    display: none; position: absolute; bottom: calc(100% + 8px); left: 50%;
+    transform: translateX(-50%);
+    background: #18181b; border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px; padding: 10px 12px; width: 220px;
+    font-size: 11px; color: #a1a1aa; line-height: 1.6;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5); z-index: 100;
+    pointer-events: none; text-align: left; font-weight: 400;
+}
+.rv-info-btn:hover .rv-tooltip { display: block; }
+
+/* ═══════════════════════════════════════
    MOBILE
 ═══════════════════════════════════════ */
 @media (max-width: 768px) {
@@ -899,8 +921,13 @@ def quality_score_html(score, test_sc, doc_sc, sec_cnt, log_cnt, est_t):
 
     sc_label = "Excellent" if score >= 85 else "Good" if score >= 70 else "Fair" if score >= 55 else "Poor"
     badge = f'<span class="rv-sev rv-sev-{"ok" if score>=80 else "warn" if score>=60 else "critical"}">{sc_label}</span>'
+    qs_title = """Code Quality Score <span class="rv-info-btn" style="vertical-align:middle;">i<span class="rv-tooltip">
+        <strong style="color:#e4e4e7;">Code Quality Score</strong><br>
+        An overall 0–100 score combining security, logic correctness, test coverage, and documentation quality.
+        80+ is excellent. Below 60 indicates significant issues that should be addressed before merging.
+    </span></span>"""
     return section_html("📊", "rgba(59,130,246,0.12)", "rgba(59,130,246,0.25)",
-                        "Code Quality Score", badge, body, open_by_default=True)
+                        qs_title, badge, body, open_by_default=True)
 
 # ─────────────────────────────────────────────────────────────────────────────
 def risk_analysis_html(rec, score, sec_cnt, log_cnt):
@@ -1034,26 +1061,6 @@ def complexity_section_html(test_sc, doc_sc, missing_tests, missing_docs):
         ])
 
     body = f"""
-    <style>
-    .rv-info-btn {{
-        display: inline-flex; align-items: center; justify-content: center;
-        width: 16px; height: 16px; border-radius: 50%;
-        background: rgba(139,92,246,0.15); border: 1px solid rgba(139,92,246,0.3);
-        color: #a78bfa; font-size: 10px; font-weight: 700;
-        cursor: default; flex-shrink: 0; line-height: 1;
-        position: relative;
-    }}
-    .rv-info-btn .rv-tooltip {{
-        display: none; position: absolute; bottom: calc(100% + 8px); left: 50%;
-        transform: translateX(-50%);
-        background: #18181b; border: 1px solid rgba(255,255,255,0.1);
-        border-radius: 10px; padding: 10px 12px; width: 220px;
-        font-size: 11px; color: #a1a1aa; line-height: 1.6;
-        box-shadow: 0 8px 24px rgba(0,0,0,0.5); z-index: 100;
-        pointer-events: none; text-align: left; font-weight: 400;
-    }}
-    .rv-info-btn:hover .rv-tooltip {{ display: block; }}
-    </style>
     <div class="rv-complexity-grid">
       <div class="rv-complexity-card">
         <div class="rv-cx-head">
