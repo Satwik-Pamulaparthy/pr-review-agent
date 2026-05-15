@@ -150,21 +150,15 @@ header[data-testid="stHeader"] { display: none; }
 .rv-sub {
     font-size: 18px; color: #ffffff; max-width: 560px;
     margin: 0 auto 36px; line-height: 1.7; font-weight: 400;
-    text-align: center;
+    text-align: center; display: block; width: 100%;
     animation: fadeInUp 0.5s 0.16s ease both;
 }
+.rv-hero { text-align: center; }
 .rv-input-row { animation: fadeInUp 0.5s 0.24s ease both; }
 
-/* Match input height to button and force black typed text */
-.rv-input-row [data-testid="stTextInput"] input {
-    height: 42px !important;
-    line-height: 42px !important;
-    color: #000000 !important;
-    font-size: 14px !important;
-}
+/* Match input height to button */
 .rv-input-row .stButton > button {
-    height: 42px !important;
-    line-height: 42px !important;
+    height: 52px !important;
 }
 
 /* Stats pills row */
@@ -640,8 +634,8 @@ header[data-testid="stHeader"] { display: none; }
     border: 1px solid rgba(255,255,255,0.1) !important;
     font-size: 15px !important; height: 52px !important;
     padding: 0 20px !important;
-    background: rgba(255,255,255,0.04) !important;
-    color: #fafafa !important;
+    background: rgba(255,255,255,0.92) !important;
+    color: #000000 !important;
 }
 .stTextInput > div > div > input::placeholder { color: #3f3f46 !important; }
 .stTextInput > div > div > input:focus {
