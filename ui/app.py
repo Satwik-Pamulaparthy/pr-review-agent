@@ -389,8 +389,9 @@ p.rv-sub { text-align: center !important; margin-left: auto !important; margin-r
     background: rgba(255,255,255,0.025);
     backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
     border: 1px solid rgba(255,255,255,0.07);
-    border-radius: 16px; margin-bottom: 12px; overflow: hidden;
+    border-radius: 16px; margin-bottom: 12px;
     transition: border-color 0.2s, box-shadow 0.2s;
+    overflow: visible;
 }
 .rv-section:hover { border-color: rgba(255,255,255,0.11); box-shadow: 0 4px 24px rgba(0,0,0,0.3); }
 
@@ -673,12 +674,12 @@ p.rv-sub { text-align: center !important; margin-left: auto !important; margin-r
     position: relative; vertical-align: middle;
 }
 .rv-info-btn .rv-tooltip {
-    display: none; position: absolute; bottom: calc(100% + 8px); left: 50%;
+    display: none; position: absolute; top: calc(100% + 8px); left: 50%;
     transform: translateX(-50%);
     background: #18181b; border: 1px solid rgba(255,255,255,0.1);
     border-radius: 10px; padding: 10px 12px; width: 220px;
     font-size: 11px; color: #a1a1aa; line-height: 1.6;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.5); z-index: 100;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5); z-index: 999;
     pointer-events: none; text-align: left; font-weight: 400;
 }
 .rv-info-btn:hover .rv-tooltip { display: block; }
