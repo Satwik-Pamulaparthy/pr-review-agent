@@ -630,32 +630,31 @@ p.rv-sub { text-align: center !important; margin-left: auto !important; margin-r
     transition: opacity 0.2s !important;
 }
 .stButton > button:hover { opacity: 0.82 !important; }
-.stTextInput, .stTextInput > div, .stTextInput > div > div {
-    margin: 0 !important; padding: 0 !important;
-}
+/* strip all wrapper spacing so input sits flush with button */
+.stTextInput { margin: 0 !important; padding: 0 !important; }
+.stTextInput > div { margin: 0 !important; padding: 0 !important; }
+.stTextInput > div > div { margin: 0 !important; padding: 0 !important; }
 .stTextInput > div > div > input {
-    border-radius: 14px !important;
-    border: 1.5px solid rgba(255,255,255,0.18) !important;
-    font-size: 14px !important;
     height: 52px !important;
-    line-height: 52px !important;
-    padding: 0 18px !important;
-    background: #ffffff !important;
-    color: #111111 !important;
-    caret-color: #111111 !important;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.18), inset 0 1px 2px rgba(0,0,0,0.06) !important;
-    vertical-align: middle !important;
-    display: flex !important;
-    align-items: center !important;
+    border-radius: 10px !important;
+    border: 1.5px solid rgba(255,255,255,0.15) !important;
+    background: rgba(255,255,255,0.96) !important;
+    color: #111827 !important;
+    caret-color: #111827 !important;
+    font-size: 14px !important;
+    font-weight: 400 !important;
+    padding: 0 16px !important;
+    letter-spacing: 0 !important;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1) !important;
+    transition: border-color 0.2s, box-shadow 0.2s !important;
 }
 .stTextInput > div > div > input::placeholder {
     color: #9ca3af !important;
-    font-size: 14px !important;
-    line-height: 52px !important;
+    font-weight: 400 !important;
 }
 .stTextInput > div > div > input:focus {
-    border-color: #8b5cf6 !important;
-    box-shadow: 0 0 0 3px rgba(139,92,246,0.18), 0 2px 12px rgba(0,0,0,0.18) !important;
+    border-color: rgba(139,92,246,0.7) !important;
+    box-shadow: 0 0 0 3px rgba(139,92,246,0.15) !important;
     outline: none !important;
 }
 [data-testid="stAlert"] {
@@ -1374,15 +1373,19 @@ def main():
         st.markdown('</div>', unsafe_allow_html=True)
         return
 
-    # ── Agent progress ────────────────────────────────────────────────────────
-    st.markdown("""
-    <div id="rv-progress-anchor" style="scroll-margin-top:20px;"></div>
+    # ── Scroll to progress section ────────────────────────────────────────────
+    import streamlit.components.v1 as components
+    components.html("""
     <script>
       setTimeout(function() {
-        var el = document.getElementById('rv-progress-anchor');
-        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 120);
+        window.parent.document.querySelector('.ra-progress-card')
+          .scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 300);
     </script>
+    """, height=0)
+
+    # ── Agent progress ────────────────────────────────────────────────────────
+    st.markdown("""
     <div class="rv-divider">
       <div class="rv-divider-line"></div>
       <span class="rv-divider-label">Live agent progress</span>
