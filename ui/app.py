@@ -637,6 +637,7 @@ p.rv-sub { text-align: center !important; margin-left: auto !important; margin-r
     padding: 0 16px !important;
     background: rgba(255,255,255,0.92) !important;
     color: #000000 !important;
+    caret-color: #000000 !important;
 }
 .stTextInput > div { padding-bottom: 0 !important; }
 .stTextInput { margin-bottom: 0 !important; }
